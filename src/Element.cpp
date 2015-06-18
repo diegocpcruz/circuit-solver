@@ -1,13 +1,9 @@
 #include <string>
 #include "Element.h"
 
-Element::Element()
-{
-    //ctor
-}
-
 // Está sendo considerado que os nós somente podem ser números
-// * Implementar elementos reativos!
+//
+// [TODO: Implementar elementos reativos!]
 Element::Element(string netlistLine)
 {
     stringstream sstream(netlistLine);
@@ -42,9 +38,74 @@ Element::Element(string netlistLine)
     }
 }
 
-Element::~Element()
+void Element::applyStamp(double Y[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables)
 {
-    //dtor
+    if (m_Type == 'R')
+    {
+        double G = 1/m_Value;
+
+        Yn[m_A][m_A] += G;
+        Yn[m_B][m_B] += G;
+        Yn[m_A][m_B] -= G;
+        Yn[m_B][m_A] -= G;
+    }
+    else if (m_Type == 'G')
+    {
+        Yn[m_A][m_C] += m_Value;
+        Yn[m_B][m_D] += m_Value;
+        Yn[m_A][m_D] -= m_Value;
+        Yn[m_B][m_C] -= m_Value;
+    }
+    else if (m_Type == 'I')
+    {
+        Yn[m_A][numVariables + 1] -= m_Value;
+        Yn[m_B][numVariables + 1] += m_Value;
+    }
+    else if (m_Type == 'V')
+    {
+        Yn[m_A][m_X] += 1;
+        Yn[m_B][m_X] -= 1;
+        Yn[m_X][m_A] -= 1;
+        Yn[m_X][m_B] += 1;
+        Yn[m_X][numVariables + 1] -= m_Value;
+    }
+    else if (m_Type == 'E')
+    {
+        Yn[m_A][m_X] += 1;
+        Yn[m_B][m_X] -= 1;
+        Yn[m_X][m_A] -= 1;
+        Yn[m_X][m_B] += 1;
+        Yn[m_X][m_C] += m_Value;
+        Yn[m_X][m_D] -= m_Value;
+    }
+    else if (m_Type == 'F')
+    {
+        Yn[m_A][m_X] += m_Value;
+        Yn[m_B][m_X] -= m_Value;
+        Yn[m_C][m_X] += 1;
+        Yn[m_D][m_X] -= 1;
+        Yn[m_X][m_C] -= 1;
+        Yn[m_X][m_D] += 1;
+    }
+    else if (m_Type == 'H')
+    {
+        Yn[m_A][m_Y] += 1;
+        Yn[m_B][m_Y] -= 1;
+        Yn[m_C][m_X] += 1;
+        Yn[m_D][m_X] -= 1;
+        Yn[m_Y][m_A] -= 1;
+        Yn[m_Y][m_B] += 1;
+        Yn[m_X][m_C] -= 1;
+        Yn[m_X][m_D] += 1;
+        Yn[m_Y][m_X] += m_Value;
+    }
+    else if (m_Type == 'O')
+    {
+        Yn[m_A][m_X] += 1;
+        Yn[m_B][m_X] -= 1;
+        Yn[m_X][m_C] += 1;
+        Yn[m_X][m_D] -= 1;
+    }
 }
 
 string Element::getName()
