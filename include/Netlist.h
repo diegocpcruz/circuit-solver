@@ -7,7 +7,6 @@
 class Netlist
 {
     public:
-        Netlist();
         ~Netlist();
     private:
         int m_NumVariables;

@@ -1,10 +1,6 @@
 #include "Element.h"
 #include "Netlist.h"
 
-Netlist::Netlist()
-{
-    //ctor
-}
 
 Netlist::~Netlist()
 {
