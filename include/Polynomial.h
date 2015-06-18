@@ -19,7 +19,7 @@ class Polynomial
         void setLength(int numOfCoefficients);
         void adjustDegree();
         int degree();
-        int numOfTerms();
+        int numTerms();
         Polynomial upOneDegree();
         complex<double> evaluate(complex<double> val);
         double getCoeff(int i);
@@ -31,7 +31,7 @@ class Polynomial
     private:
         vector<double> m_Coefficients;
         int m_Degree;
-        int m_NumOfTerms;
+        int m_NumTerms;
 };
 
 #endif // POLYNOMIAL_H

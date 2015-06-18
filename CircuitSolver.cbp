@@ -34,8 +34,12 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/Element.h" />
+		<Unit filename="include/Matrix.h" />
 		<Unit filename="include/Polynomial.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/Element.cpp" />
+		<Unit filename="src/Matrix.cpp" />
 		<Unit filename="src/Polynomial.cpp" />
 		<Extensions>
 			<code_completion />

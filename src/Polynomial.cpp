@@ -9,7 +9,7 @@ Polynomial::Polynomial()
 {
     m_Coefficients.assign(DEFAULT_POLY_LEN, 0);
 
-    m_Degree = m_NumOfTerms = 0;
+    m_Degree = m_NumTerms = 0;
 }
 
 Polynomial::Polynomial(vector<double> coefficients)
@@ -17,7 +17,7 @@ Polynomial::Polynomial(vector<double> coefficients)
     m_Coefficients = coefficients;
 
     m_Degree = degree();
-    m_NumOfTerms = numOfTerms();
+    m_NumTerms = numTerms();
 };
 
 Polynomial::~Polynomial()
@@ -51,7 +51,7 @@ void Polynomial::adjustDegree()
     return;
 }
 
-int Polynomial::numOfTerms()
+int Polynomial::numTerms()
 {
     int numTerms = 0;
 
