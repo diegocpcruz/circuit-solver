@@ -1,3 +1,5 @@
+#include <iostream>
+#include <string>
 #include "Element.h"
 #include "Netlist.h"
 
@@ -9,14 +11,14 @@ Netlist::~Netlist()
 
 void Netlist::addCurrentVariable(Element& element)
 {
-    string type = element.getType();
+    char type = element.getType();
     string name = element.getName();
 
     if (type == 'V' || type == 'E' || type == 'F' || type == 'O')
     {
         m_NumVariables++;
 
-        if (m_NumVariables > MAX_NODES)
+        if (m_NumVariables > MAX_VARIABLES)
         {
             cout << "As correntes extras excederam o número de variáveis permitido ("
                  << MAX_VARIABLES << ")" << endl;

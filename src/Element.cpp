@@ -1,5 +1,9 @@
+#include <iostream>
 #include <string>
+#include <sstream>
 #include "Element.h"
+
+using namespace std;
 
 // Está sendo considerado que os nós somente podem ser números
 //
@@ -11,7 +15,7 @@ Element::Element(string netlistLine)
     sstream >> m_Name;
     m_Type = getType();
 
-    sstream.str(string(netlistLine, name.size(), npos));
+    sstream.str(string(netlistLine, m_Name.size(), string::npos));
 
     if (m_Type == 'R')
     {
@@ -38,7 +42,7 @@ Element::Element(string netlistLine)
     }
 }
 
-void Element::applyStamp(double Y[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables)
+void Element::applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables)
 {
     if (m_Type == 'R')
     {

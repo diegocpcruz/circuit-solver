@@ -27,9 +27,9 @@ Polynomial::~Polynomial()
 
 int Polynomial::degree()
 {
-    int degree = (int)m_Coefficients.size() - 1;
+    int degree = (int)this->m_Coefficients.size() - 1;
 
-    while (m_Coefficients[degree] == 0)
+    while (this->m_Coefficients[degree] == 0 && degree > 0)
         degree--;
 
     return degree;
@@ -42,7 +42,7 @@ void Polynomial::setLength(int numOfCoefficients)
 
 void Polynomial::adjustDegree()
 {
-    while (m_Degree > 0 && fabs(m_Coefficients[m_Degree] < EPSILON))
+    while (m_Degree > 0 && fabs(m_Coefficients[m_Degree]) < EPSILON)
     {
         m_Degree--;
         m_Coefficients.resize(m_Degree);
@@ -132,15 +132,90 @@ Polynomial Polynomial::upOneDegree()
     return *this;
 }
 
-Polynomial Polynomial::multByConst(double constant)
+//Polynomial Polynomial::multByConst(double constant)
+//{
+//    for (int i = 0; i <= m_Degree; i++)
+//        m_Coefficients[i] *= constant;
+//
+//    adjustDegree();
+//
+//    return *this;
+//}
+
+Polynomial Polynomial::operator +=(const Polynomial& polynomial)
+{
+    return this->add(polynomial);
+}
+
+Polynomial Polynomial::operator +=(double constant)
+{
+    return this->add(constant);
+}
+
+Polynomial Polynomial::operator -=(const Polynomial& polynomial)
+{
+    //polynomial.multByConst(-1);
+
+    return this->add((-1)*polynomial);
+}
+
+Polynomial Polynomial::operator -=(double constant)
+{
+    return this->add((-1)*constant);
+}
+
+Polynomial Polynomial::operator *=(double constant)
 {
     for (int i = 0; i <= m_Degree; i++)
-        m_Coefficients *= constant;
+        m_Coefficients[i] *= constant;
 
     adjustDegree();
 
     return *this;
 }
+
+Polynomial operator +(Polynomial& polynomial_0,
+                      Polynomial& polynomial_1)
+{
+    return Polynomial(polynomial_0) += polynomial_1;
+}
+
+Polynomial operator +(const Polynomial& polynomial, double constant)
+{
+    return Polynomial(polynomial) += constant;
+}
+
+Polynomial operator +(double constant, const Polynomial& polynomial)
+{
+    return Polynomial(polynomial) += constant;
+}
+
+Polynomial operator -(const Polynomial& minuend_polynomial, const Polynomial& subtrahend_polynomial)
+{
+    return Polynomial(minuend_polynomial) -= subtrahend_polynomial;
+}
+
+Polynomial operator -(const Polynomial& minuend_polynomial, double constant)
+{
+    return Polynomial(minuend_polynomial) -= constant;
+}
+
+Polynomial operator -(double constant, const Polynomial& polynomial)
+{
+//    return polynomial.multByConst(-1) + constant;
+    return (-1)*polynomial + constant;
+}
+
+Polynomial operator *(const Polynomial& polynomial, double constant)
+{
+    return Polynomial(polynomial) *= constant;
+}
+
+Polynomial operator *(double constant, const Polynomial& polynomial)
+{
+    return Polynomial(polynomial) *= constant;
+}
+
 
 string Polynomial::toString()
 {

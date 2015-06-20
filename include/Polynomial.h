@@ -26,12 +26,33 @@ class Polynomial
         string toString();
         Polynomial add(Polynomial polynomial);
         Polynomial add(double constant);
-        Polynomial multByConst(double constant);
+        //Polynomial multByConst(double constant);
+        Polynomial operator +=(const Polynomial& polynomial);
+        Polynomial operator +=(double constant);
+        Polynomial operator -=(const Polynomial& polynomial);
+        Polynomial operator -=(double constant);
+        Polynomial operator *=(double constant);
 
     private:
         vector<double> m_Coefficients;
         int m_Degree;
         int m_NumTerms;
 };
+
+Polynomial operator +(const Polynomial& polynomial_0, const Polynomial& polynomial_1);
+
+Polynomial operator +(const Polynomial& polynomial, double constant);
+
+Polynomial operator +(double constant, const Polynomial& polynomial);
+
+Polynomial operator -(const Polynomial& minuend_polynomial, const Polynomial& subtrahend_polynomial);
+
+Polynomial operator -(const Polynomial& minuend_polynomial, double constant);
+
+Polynomial operator -(double constant, const Polynomial& polynomial);
+
+Polynomial operator *(const Polynomial& polynomial, double constant);
+
+Polynomial operator *(double constant, const Polynomial& polynomial);
 
 #endif // POLYNOMIAL_H
