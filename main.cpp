@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "Polynomial.h"
+#include "Netlist.h"
 
 using namespace std;
 
@@ -69,6 +70,11 @@ int main()
     cout << "Degree: " << poly_5.degree() << endl;
     cout << "Number of terms: " << poly_5.numTerms() << endl;
     cout << "P(" << val << ") = " << poly_5.evaluate(val) << endl << endl;
+
+    // Teste p/ leitura do netlist
+    Netlist netlist(".\\data\\simples.net");
+    cout << "Initial number of variables: " << netlist.getNumOfVariables() << endl;
+    netlist.showVariables();
 
     return 0;
 }

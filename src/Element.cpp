@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
 #include "Element.h"
 
 using namespace std;
@@ -14,6 +15,9 @@ Element::Element(string netlistLine)
 
     sstream >> m_Name;
     m_Type = getType();
+
+    m_A = m_B = m_C = m_D = m_X = m_Y = -1;
+    m_Mode = "";
 
     sstream.str(string(netlistLine, m_Name.size(), string::npos));
 
@@ -40,6 +44,20 @@ Element::Element(string netlistLine)
         cout << m_Name << " " << m_A << " " << m_B << " " << m_C << " "
              << m_D << " " << endl;
     }
+}
+
+void Element::showMembers()
+{
+    cout << "[ELEMENT DESCRIPTION]" << endl;
+    cout << "Name: " << m_Name << endl;
+    cout << "Type: " << m_Type << endl;
+    cout << "Value: " << m_Value << endl;
+    cout << "A: " << m_A << endl;
+    cout << "B: " << m_B << endl;
+    cout << "C: " << m_C << endl;
+    cout << "D: " << m_D << endl;
+    cout << "X: " << m_X << endl;
+    cout << "Y: " << m_Y << endl << endl;
 }
 
 void Element::applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables)
@@ -120,4 +138,42 @@ string Element::getName()
 char Element::getType()
 {
     return m_Name[0];
+}
+
+//int Element::getNodeNumber(string nodeName, int& numNodes, vector<string>& variablesList)
+//{
+//    int i = 0;
+//    bool found = false;
+//
+//    while (!found && i <= numNodes)
+//    {
+//        if (!(found = !variablesList[i].compare(nodeName)))
+//            i++;
+//    }
+//
+//    if (!found) // New node
+//    {
+//        if (numNodes == MAX_VARIABLES)
+//        {
+//            cout << "Maximum number of nodes reached: " << MAX_VARIABLES << endl;
+//
+//            return -1;
+//        }
+//
+//        numNodes++;
+//        variablesList[numNodes] = nodeName;
+//
+//        return numNodes;
+//    }
+//    else // Known node
+//    {
+//        return i;
+//    }
+//}
+
+bool Element::isValid()
+{
+    string validTypes("RIVGEFHO");
+
+    return validTypes.find(m_Type) != string::npos;
 }
