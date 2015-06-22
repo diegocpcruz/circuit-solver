@@ -1,11 +1,11 @@
 #include "Matrix.h"
 
-Matrix::Matrix()
-{
-    //ctor
-}
-
-Matrix::~Matrix()
-{
-    //dtor
-}
+//Matrix::Matrix()
+//{
+//    //ctor
+//}
+//
+//Matrix::~Matrix()
+//{
+//    //dtor
+//}

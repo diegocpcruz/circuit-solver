@@ -7,14 +7,19 @@
 
 using namespace std;
 
-Netlist::Netlist(string path)
+Netlist::Netlist()
+{
+    m_NumVariables = m_NumElements = 0;
+}
+
+Netlist::Netlist(string netlistPath)
 {
     ifstream netlistFile;
     string line;
 
-    cout << "Netlist path: " << path << endl;
+    cout << "Netlist netlistPath: " << netlistPath << endl;
 
-    netlistFile.open(path.c_str(), ifstream::in);
+    netlistFile.open(netlistPath.c_str(), ifstream::in);
 
     if (!netlistFile.is_open())
     {
@@ -29,7 +34,7 @@ Netlist::Netlist(string path)
         if (line[0] == '*' || isdigit(line[0]))
             continue;
 
-        Element currElement(line);
+        Element currElement(line, m_Elements);
 
         if (currElement.isValid())
         {
@@ -41,6 +46,8 @@ Netlist::Netlist(string path)
     netlistFile.close();
 
     countNodes();
+
+    m_NumElements = m_Elements.size();
 }
 
 Netlist::~Netlist()
@@ -49,7 +56,7 @@ Netlist::~Netlist()
     m_Elements.clear();
 }
 
-void Netlist::countNodes()
+int Netlist::countNodes()
 {
     char buffer[255];
 
@@ -73,6 +80,8 @@ void Netlist::countNodes()
     }
 
     m_NumVariables = m_VariablesList.size();
+
+    return m_NumVariables;
 }
 
 void Netlist::showVariables()
@@ -96,6 +105,11 @@ void Netlist::increaseNumNodes(string nodeName)
 int Netlist::getNumOfVariables()
 {
     return m_NumVariables;
+}
+
+int Netlist::getNumElements()
+{
+    return m_NumElements;
 }
 
 void Netlist::addCurrentVariable(Element& element)

@@ -34,12 +34,16 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/Circuit.h" />
 		<Unit filename="include/Element.h" />
+		<Unit filename="include/Interpolator.h" />
 		<Unit filename="include/Matrix.h" />
 		<Unit filename="include/Netlist.h" />
 		<Unit filename="include/Polynomial.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/Circuit.cpp" />
 		<Unit filename="src/Element.cpp" />
+		<Unit filename="src/Interpolator.cpp" />
 		<Unit filename="src/Matrix.cpp" />
 		<Unit filename="src/Netlist.cpp" />
 		<Unit filename="src/Polynomial.cpp" />

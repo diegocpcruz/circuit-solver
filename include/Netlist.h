@@ -10,16 +10,18 @@ using namespace std;
 class Netlist
 {
     public:
-        Netlist(string path);
+        vector<Element> m_Elements;
+        Netlist();
+        Netlist(string netlistPath);
         ~Netlist();
-        void countNodes();
+        int countNodes();
         void showVariables();
         int getNumOfVariables();
-
+        int getNumElements();
     private:
         int m_NumVariables;
+        int m_NumElements;
         vector<string> m_VariablesList;
-        vector<Element> m_Elements;
 
         void addCurrentVariable(Element& element);
         void increaseNumNodes(string nodeName);
