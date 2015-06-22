@@ -2,6 +2,7 @@
 #include <vector>
 #include "Polynomial.h"
 #include "Netlist.h"
+#include "Circuit.h"
 
 using namespace std;
 
@@ -72,9 +73,16 @@ int main()
     cout << "P(" << val << ") = " << poly_5.evaluate(val) << endl << endl;
 
     // Teste p/ leitura do netlist
-    Netlist netlist(".\\data\\simples.net");
+    //Netlist netlist(".\\data\\simples.net");
+    //Netlist netlist(".\\data\\but3_ini.net");
+    Netlist netlist(".\\data\\EL8.NET");
     cout << "Initial number of variables: " << netlist.getNumOfVariables() << endl;
     netlist.showVariables();
+
+    // Teste p/ inicialização do circuito
+    Circuit circuit(netlist);
+    cout << "Circuit variables:" << endl;
+    circuit.showVariables();
 
     return 0;
 }

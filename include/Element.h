@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "Polynomial.h"
 
 #define MAX_VARIABLES 200
 
@@ -14,9 +15,10 @@ class Element
         int m_A, m_B, m_C, m_D;
         int m_X, m_Y;
 
-        Element(string netlistLine);
+        Element(string netlistLine, vector<Element> elementsList);
         void applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables);
-        void addCurrentVariables(int& numVariables, vector<Element>& variables);
+        void applyStamp(Polynomial Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables);
+        void addCurrentVariables(int& numVariables, vector<Element>& elementsList);
         string getName();
         char getType();
         void showMembers();

@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cstdlib>
 #include "Element.h"
 
 using namespace std;
@@ -9,7 +10,7 @@ using namespace std;
 // Está sendo considerado que os nós somente podem ser números
 //
 // [TODO: Implementar elementos reativos!]
-Element::Element(string netlistLine)
+Element::Element(string netlistLine, vector<Element> elementsList)
 {
     stringstream sstream(netlistLine);
 
@@ -17,6 +18,7 @@ Element::Element(string netlistLine)
     m_Type = getType();
 
     m_A = m_B = m_C = m_D = m_X = m_Y = -1;
+    m_InitialValue = 0;
     m_Mode = "";
 
     sstream.str(string(netlistLine, m_Name.size(), string::npos));
@@ -25,6 +27,43 @@ Element::Element(string netlistLine)
     {
         sstream >> m_A >> m_B >> m_Value;
         cout << m_Name << " " << m_A << " " << m_B << " " << m_Value << endl;
+    }
+    if (m_Type == 'C' || m_Type == 'L')
+    {
+        string str_InitialValue;
+
+        sstream >> m_A >> m_B >> m_Value >> str_InitialValue;
+        if (str_InitialValue.length() != 0)
+            m_InitialValue = atoi((str_InitialValue.substr(3, string::npos)).c_str());
+
+        cout << m_Name << " " << m_A << " " << m_B << " " << m_Value << " " << m_InitialValue << endl;
+    }
+    if (m_Type == 'K')
+    {
+        string L_A, L_B;
+
+        sstream >> L_A >> L_B >> m_Value;
+
+        for (int i = 0; i < (int)elementsList.size(); i++)
+        {
+            if (!(elementsList[i].getName()).compare(L_A))
+            {
+                m_A = elementsList[i].m_A;
+                m_B = elementsList[i].m_B;
+            }
+        }
+
+        for (int i = 0; i < (int)elementsList.size(); i++)
+        {
+            if (!(elementsList[i].getName()).compare(L_B))
+            {
+                m_C = elementsList[i].m_A;
+                m_D = elementsList[i].m_B;
+            }
+        }
+
+        cout << m_Name << " " << m_A << " " << m_B << " " << m_C << " "
+             << m_D << " " << m_Value << endl;
     }
     if (m_Type == 'I' || m_Type == 'V')
     {
@@ -52,6 +91,7 @@ void Element::showMembers()
     cout << "Name: " << m_Name << endl;
     cout << "Type: " << m_Type << endl;
     cout << "Value: " << m_Value << endl;
+    cout << "Initial value: " << m_InitialValue << endl;
     cout << "A: " << m_A << endl;
     cout << "B: " << m_B << endl;
     cout << "C: " << m_C << endl;
@@ -61,6 +101,76 @@ void Element::showMembers()
 }
 
 void Element::applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables)
+{
+    if (m_Type == 'R')
+    {
+        double G = 1/m_Value;
+
+        Yn[m_A][m_A] += G;
+        Yn[m_B][m_B] += G;
+        Yn[m_A][m_B] -= G;
+        Yn[m_B][m_A] -= G;
+    }
+    else if (m_Type == 'G')
+    {
+        Yn[m_A][m_C] += m_Value;
+        Yn[m_B][m_D] += m_Value;
+        Yn[m_A][m_D] -= m_Value;
+        Yn[m_B][m_C] -= m_Value;
+    }
+    else if (m_Type == 'I')
+    {
+        Yn[m_A][numVariables + 1] -= m_Value;
+        Yn[m_B][numVariables + 1] += m_Value;
+    }
+    else if (m_Type == 'V')
+    {
+        Yn[m_A][m_X] += 1;
+        Yn[m_B][m_X] -= 1;
+        Yn[m_X][m_A] -= 1;
+        Yn[m_X][m_B] += 1;
+        Yn[m_X][numVariables + 1] -= m_Value;
+    }
+    else if (m_Type == 'E')
+    {
+        Yn[m_A][m_X] += 1;
+        Yn[m_B][m_X] -= 1;
+        Yn[m_X][m_A] -= 1;
+        Yn[m_X][m_B] += 1;
+        Yn[m_X][m_C] += m_Value;
+        Yn[m_X][m_D] -= m_Value;
+    }
+    else if (m_Type == 'F')
+    {
+        Yn[m_A][m_X] += m_Value;
+        Yn[m_B][m_X] -= m_Value;
+        Yn[m_C][m_X] += 1;
+        Yn[m_D][m_X] -= 1;
+        Yn[m_X][m_C] -= 1;
+        Yn[m_X][m_D] += 1;
+    }
+    else if (m_Type == 'H')
+    {
+        Yn[m_A][m_Y] += 1;
+        Yn[m_B][m_Y] -= 1;
+        Yn[m_C][m_X] += 1;
+        Yn[m_D][m_X] -= 1;
+        Yn[m_Y][m_A] -= 1;
+        Yn[m_Y][m_B] += 1;
+        Yn[m_X][m_C] -= 1;
+        Yn[m_X][m_D] += 1;
+        Yn[m_Y][m_X] += m_Value;
+    }
+    else if (m_Type == 'O')
+    {
+        Yn[m_A][m_X] += 1;
+        Yn[m_B][m_X] -= 1;
+        Yn[m_X][m_C] += 1;
+        Yn[m_X][m_D] -= 1;
+    }
+}
+
+void Element::applyStamp(Polynomial Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables)
 {
     if (m_Type == 'R')
     {
@@ -173,7 +283,7 @@ char Element::getType()
 
 bool Element::isValid()
 {
-    string validTypes("RIVGEFHO");
+    string validTypes("RIVGEFHOCLK");
 
     return validTypes.find(m_Type) != string::npos;
 }
