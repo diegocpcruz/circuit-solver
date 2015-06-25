@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <cstdlib>
+#include <sstream>
 #include "Element.h"
 #include "Netlist.h"
 
@@ -30,6 +31,26 @@ Netlist::Netlist(string netlistPath)
     while(getline(netlistFile, line))
     {
         //cout << line << endl;
+
+        if (line[0] == '.')
+        {
+            stringstream sstream;
+            string command, mode, strTemp(line);
+            double radius, norm;
+
+            cout << "line: " << line << endl;
+
+            sstream.str(strTemp);
+
+            sstream >> command >> mode >> radius >> norm;
+
+            cout << "sstream: " << sstream << endl;
+            cout << "params: " << command << " " << mode << " " << radius << " " << norm << endl;
+
+            m_Mode = mode;
+            m_Radius = radius;
+            m_Norm = norm;
+        }
 
         if (line[0] == '*' || isdigit(line[0]))
             continue;

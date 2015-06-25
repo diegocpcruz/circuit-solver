@@ -72,17 +72,27 @@ int main()
     cout << "Number of terms: " << poly_5.numTerms() << endl;
     cout << "P(" << val << ") = " << poly_5.evaluate(val) << endl << endl;
 
+    // Polinômio 6
+    // Valor esperado: s
+    Polynomial poly_6(1);
+    cout << "[Polynomial 6]" << endl;
+    cout << "Polynomial: " << poly_6.toString() << endl;
+    cout << "Degree: " << poly_6.degree() << endl;
+    cout << "Number of terms: " << poly_6.numTerms() << endl;
+    cout << "P(" << val << ") = " << poly_6.evaluate(val) << endl << endl;
+
+
     // Teste p/ leitura do netlist
-    //Netlist netlist(".\\data\\simples.net");
-    //Netlist netlist(".\\data\\but3_ini.net");
-    Netlist netlist(".\\data\\EL8.NET");
+    Netlist netlist(".\\data\\simples.net");
+//    Netlist netlist(".\\data\\but3_ini.net");
+    //Netlist netlist(".\\data\\EL8.NET");
     cout << "Initial number of variables: " << netlist.getNumOfVariables() << endl;
     netlist.showVariables();
 
     // Teste p/ inicialização do circuito
-    Circuit circuit(netlist);
-    cout << "Circuit variables:" << endl;
-    circuit.showVariables();
+//    Circuit circuit(netlist);
+//    cout << "Circuit variables:" << endl;
+//    circuit.showVariables();
 
     return 0;
 }

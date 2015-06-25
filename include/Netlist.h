@@ -18,6 +18,8 @@ class Netlist
         void showVariables();
         int getNumOfVariables();
         int getNumElements();
+        string m_Mode;
+        double m_Radius, m_Norm;
     private:
         int m_NumVariables;
         int m_NumElements;

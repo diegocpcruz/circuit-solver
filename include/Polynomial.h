@@ -14,6 +14,7 @@ class Polynomial
 {
     public:
         Polynomial();
+        Polynomial(double coeff);
         Polynomial(vector<double> coefficients);
         ~Polynomial();
         void setLength(int numOfCoefficients);

@@ -12,6 +12,15 @@ Polynomial::Polynomial()
     m_Degree = m_NumTerms = 0;
 }
 
+Polynomial::Polynomial(double coeff)
+{
+    m_Coefficients.assign(2, 0);
+    m_Coefficients[1] = coeff;
+
+    m_Degree = degree();
+    m_NumTerms = numTerms();
+}
+
 Polynomial::Polynomial(vector<double> coefficients)
 {
     m_Coefficients = coefficients;

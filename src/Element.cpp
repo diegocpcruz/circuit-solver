@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <cstdlib>
+#include <complex>
 #include "Element.h"
 
 using namespace std;
@@ -170,7 +171,8 @@ void Element::applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVar
     }
 }
 
-void Element::applyStamp(Polynomial Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables)
+void Element::applyStamp(complex<double> Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables,
+                         vector<Element> elementsList, complex<double> sValue)
 {
     if (m_Type == 'R')
     {
@@ -187,6 +189,78 @@ void Element::applyStamp(Polynomial Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int nu
         Yn[m_B][m_D] += m_Value;
         Yn[m_A][m_D] -= m_Value;
         Yn[m_B][m_C] -= m_Value;
+    }
+    else if (m_Type == 'C')
+    {
+        Yn[m_A][m_A] += sValue * m_Value;
+        Yn[m_B][m_B] += sValue * m_Value;
+        Yn[m_A][m_B] -= sValue * m_Value;
+        Yn[m_B][m_A] -= sValue * m_Value;
+        Yn[m_A][numVariables + 1] += m_Value * m_InitialValue;
+        Yn[m_B][numVariables + 1] -= m_Value * m_InitialValue;
+    }
+    else if (m_Type == 'L')
+    {
+        Yn[m_A][m_A] += 1.0 / (sValue * m_Value);
+        Yn[m_B][m_B] += 1.0 / (sValue * m_Value);
+        Yn[m_A][m_B] -= 1.0 / (sValue * m_Value);
+        Yn[m_B][m_A] -= 1.0 / (sValue * m_Value);
+        Yn[m_A][numVariables + 1] -= m_InitialValue / sValue;
+        Yn[m_B][numVariables + 1] += m_InitialValue / sValue;
+    }
+    else if (m_Type == 'K')
+    {
+        double L1, L2;
+        double initialValueL1, initialValueL2;
+
+        for (int i = 0; i < (int)elementsList.size(); i++)
+        {
+            Element el = elementsList[i];
+
+            if (el.getType() == 'L' && el.m_A == m_A && el.m_B == m_B)
+            {
+                L1 = el.m_Value;
+                initialValueL1 = el.m_InitialValue;
+            }
+        }
+
+        for (int i = 0; i < (int)elementsList.size(); i++)
+        {
+            Element el = elementsList[i];
+
+            if (el.getType() == 'L' && el.m_A == m_C && el.m_B == m_D)
+            {
+                L2 = el.m_Value;
+                initialValueL2 = el.m_InitialValue;
+            }
+        }
+
+        double r11, r22, r12, r21;
+
+        r11 = L2 / (L1 * L2 - m_Value * m_Value);
+        r22 = L1 / (L1 * L2 - m_Value * m_Value);
+        r12 = r21 = - m_Value / (L1 * L2 - m_Value * m_Value);
+
+        Yn[m_A][m_A] += r11 / sValue;
+        Yn[m_B][m_B] += r11 / sValue;
+        Yn[m_C][m_C] += r22 / sValue;
+        Yn[m_D][m_D] += r22 / sValue;
+        Yn[m_A][m_B] -= r11 / sValue;
+        Yn[m_B][m_A] -= r11 / sValue;
+        Yn[m_A][m_C] += r12 / sValue;
+        Yn[m_C][m_A] += r21 / sValue;
+        Yn[m_A][m_D] -= r12 / sValue;
+        Yn[m_D][m_A] -= r21 / sValue;
+        Yn[m_B][m_C] -= r12 / sValue;
+        Yn[m_C][m_B] -= r21 / sValue;
+        Yn[m_B][m_D] += r12 / sValue;
+        Yn[m_D][m_B] += r21 / sValue;
+        Yn[m_C][m_D] -= r22 / sValue;
+        Yn[m_D][m_C] -= r22 / sValue;
+        Yn[m_A][numVariables + 1] -= initialValueL1 / sValue;
+        Yn[m_B][numVariables + 1] += initialValueL1 / sValue;
+        Yn[m_C][numVariables + 1] -= initialValueL2 / sValue;
+        Yn[m_D][numVariables + 1] += initialValueL2 / sValue;
     }
     else if (m_Type == 'I')
     {
