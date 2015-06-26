@@ -6,7 +6,8 @@ using namespace std;
 
  vector< complex<double> > Interpolator::getSValues(string mode, double radius, int order)
  	 {
-	 	 double step, beggin, point = 0;
+	 	 double step, beggin = 0;
+	 	 complex<double> point = 0;
 	 	 vector< complex<double> > values;
 
 	 	 step = 2*m_Radius/m_Order;
@@ -16,7 +17,19 @@ using namespace std;
 	 		 point = beggin = -radius;
 	 		 while (point <= radius)
 	 		 {
-	 			 v.push
+	 			 if (point == 0)
+	 			 {
+	 				 point = -step/2;
+	 				 values.push_back(point);
+					 point += step;
+					 values.push_back(point);
+					 point += step/2;
+	 			 }
+	 			 else
+	 			 {
+	 				values.push_back(point);
+					 point += step;
+	 			 }
 	 		 }
 	 	 }
 
