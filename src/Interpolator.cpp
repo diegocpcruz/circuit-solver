@@ -14,6 +14,10 @@ using namespace std;
 	 	 if (mode == "LIN")
 	 	 {
 	 		 point = beggin = -radius;
+	 		 while (point <= radius)
+	 		 {
+	 			 v.push
+	 		 }
 	 	 }
 
 	 	 if (mode == "CIR")
