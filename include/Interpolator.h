@@ -9,9 +9,8 @@ using namespace std;
 class Interpolator
 {
     public:
-        Interpolator();
-        vector< complex<double> > getSValues(string mode, double radius); // Usar std::polar
-    protected:
+        Interpolator(int i);
+        vector< complex<double> > getSValues(string mode, double radius, double order);
     private:
 };
 

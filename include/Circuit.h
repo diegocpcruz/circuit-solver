@@ -13,7 +13,8 @@ class Circuit
         Circuit(Netlist netlist);
         //void evaluate(complex<double> value, complex<double> Yn[MAX_VARIABLsulaES][MAX_VARIABLES + 1]);
         void showVariables();
-
+        void solve(double Yn[3][4], int numVariables);
+        void show(double Yn[3][4], int numVariables);
     private:
         Netlist m_Netlist;
         //Matrix m_Matrix;
@@ -23,5 +24,4 @@ class Circuit
         int m_NumNodes;
         int m_NumElements;
 };
-
 #endif // CIRCUIT_H

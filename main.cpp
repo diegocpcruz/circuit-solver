@@ -3,6 +3,7 @@
 #include "Polynomial.h"
 #include "Netlist.h"
 #include "Circuit.h"
+#include "Interpolator.h"
 
 using namespace std;
 
@@ -83,16 +84,30 @@ int main()
 
 
     // Teste p/ leitura do netlist
+    double Yn[3][4] = {{0, 0, 0, 0}, {1, 2, 1, 1}, {3, 4, 2, 3}};
+
+
+
     Netlist netlist(".\\data\\simples.net");
 //    Netlist netlist(".\\data\\but3_ini.net");
     //Netlist netlist(".\\data\\EL8.NET");
-    cout << "Initial number of variables: " << netlist.getNumOfVariables() << endl;
-    netlist.showVariables();
+//    cout << "Initial number of variables: " << netlist.getNumOfVariables() << endl;
+//    netlist.showVariables();
 
     // Teste p/ inicialização do circuito
-//    Circuit circuit(netlist);
+    Circuit circuit(netlist);
+    circuit.solve(Yn, 2);
+    circuit.show(Yn, 2);
 //    cout << "Circuit variables:" << endl;
 //    circuit.showVariables();
+
+    Interpolator interpolator(1);
+    vector< complex<double> > values;
+
+    values = interpolator.getSValues("LIN", 1, 3);
+
+    for (int i = 0; i < (int)values.size(); i++)
+        cout << "value[" << i << "] - " << values[i] << endl;
 
     return 0;
 }

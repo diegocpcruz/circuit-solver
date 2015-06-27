@@ -1,10 +1,17 @@
 #include <vector>
 #include <complex>
+#include <cmath>
+#include <iostream>
 #include "Interpolator.h"
 
 using namespace std;
 
- vector< complex<double> > Interpolator::getSValues(string mode, double radius)
+Interpolator::Interpolator(int i)
+{
+    cout << "FODASE" << endl;
+}
+
+ vector< complex<double> > Interpolator::getSValues(string mode, double radius, double order)
  	 {
 	 	 double step = 0;
 	 	 complex<double> sValue;
@@ -18,29 +25,33 @@ using namespace std;
 
 	 	 if (mode == "LIN")
 	 	 {
-	 		 step = 2*m_Radius/m_Order;
-	 		 sValue = (-real , imag);
-	 		 while (real(sValue) <= radius)
+	 		 step = 2 * radius/order;
+	 		 sValue = complex<double>(-real , imag);
+	 		 for (int i = 0; i < order + 1; i++)
 	 		 {
-	 			 if (real(sValue) == 0)
+	 			 if (std::real(sValue) == 0)
 	 			 {
-	 				 sValue += (step/2 , imag);
+	 				 sValue += complex<double>(step/2 , imag);
 	 				 values.push_back(sValue);
-	 				 sValue += (step/2 , imag);
+	 				 sValue += complex<double>(step/2 , imag);
+
+	 				 continue;
 	 			 }
+
 				 values.push_back(sValue);
-				 sValue += (step , imag);
+				 sValue += complex<double>(step , imag);
 	 		 }
 	 	 }
 
 	 	 if (mode == "CIR")
 	 	 {
-	 		 step = 360/m_Order;
-	 		 sValue = polar(modulus , phase);
-	 		 while (arg(sValue) <= 360)
+	 		 step = 2 * M_PI/(order + 1);
+	 		 sValue = polar(modulus, phase);
+	 		 for (int i = 0; i < order + 1; i++)
 	 		 {
 	 			 values.push_back(sValue);
-	 			 sValue += polar(modulus , step);
+	 			 phase += step;
+	 			 sValue = polar(modulus, phase);
 	 		 }
 	 	 }
 
