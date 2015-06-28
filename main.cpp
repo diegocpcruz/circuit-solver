@@ -84,7 +84,13 @@ int main()
 
 
     // Teste p/ leitura do netlist
-    double Yn[3][4] = {{0, 0, 0, 0}, {1, 2, 1, 1}, {3, 4, 2, 3}};
+    //double Yn[3][4] = {{0, 0, 0, 0}, {1, 2, 1, 1}, {3, 4, 2, 3}};
+    double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2];
+
+    Yn[0][0] = Yn[0][1] = Yn[0][2] = Yn[0][3] = Yn[0][4] = Yn[1][0] = Yn[2][0] = Yn[3][0] = 0;
+    Yn[1][1] = 5.3; Yn[1][2] = 12.4; Yn[1][3] = 233; Yn[1][4] = 5;
+    Yn[2][1] = 1; Yn[2][2] = 3; Yn[2][3] = 4; Yn[2][4] = 9;
+    Yn[3][1] = 0; Yn[3][2] = 4; Yn[3][3] = 7; Yn[3][4] = 9;
 
 
 
@@ -95,9 +101,12 @@ int main()
 //    netlist.showVariables();
 
     // Teste p/ inicialização do circuito
+
     Circuit circuit(netlist);
-    circuit.solve(Yn, 2);
-    circuit.show(Yn, 2);
+    circuit.show(Yn, 3);
+    circuit.solve(Yn, 3);
+    cout << "determinant: " << circuit.determinant(Yn, 3) << endl;
+//    circuit.show(Yn, 3);
 //    cout << "Circuit variables:" << endl;
 //    circuit.showVariables();
 
