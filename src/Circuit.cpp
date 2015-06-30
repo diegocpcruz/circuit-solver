@@ -13,6 +13,7 @@ Circuit::Circuit(string netlistPath)
 
     m_NumVariables = m_Netlist.getNumOfVariables();
     m_NumNodes = m_Netlist.countNodes();
+    m_NumElements = m_Netlist.getNumElements();
 }
 
 Circuit::Circuit(Netlist netlist)
@@ -37,10 +38,10 @@ void Circuit::applyStamps(complex<double> Yn[MAX_VARIABLES][MAX_VARIABLES + 1], 
     }
 }
 
-void Circuit::solve(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
+void Circuit::solve(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
 {
-    int i, j, l, a;
-    double t, p, counter = 0;
+    int i, j, l, a, counter;
+    complex<double> t, p = 0;
 
     cout << "[INICIO]: " << endl; show(Yn, 2); cout << endl;
     for( i = 1; i <= numVariables; i++ )
@@ -49,7 +50,7 @@ void Circuit::solve(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVari
         a = i;
         for( l = i; l <= numVariables; l++ )
         {
-            if( fabs( Yn[l][i] ) > fabs( t ) )
+            if( abs( Yn[l][i] ) > abs( t ) )
 //            if( fabs( Yn[l][i] ) != 0)
             {
                 a = l;
@@ -72,7 +73,7 @@ void Circuit::solve(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVari
                 Yn[a][l] = p;
             }
         }
-        if( fabs( t ) < EPSILON )
+        if( abs( t ) < EPSILON )
         {
             //printf("Sistema singular\n");
             return;
@@ -97,11 +98,11 @@ void Circuit::solve(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVari
     cout << "final counter: " << counter << endl;
 }
 
-double Circuit::determinant(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
+complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
 {
-    int i, j, l, a;
-    double t, p, counter = 0;
-    double det = 1;
+    int i, j, l, a, counter;
+    complex<double> t, p = 0;
+    complex<double> det = 1;
 
     cout << "[INICIO]: " << endl; show(Yn, 2); cout << endl;
     for( i = 1; i <= numVariables; i++ )
@@ -110,7 +111,7 @@ double Circuit::determinant(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int
         a = i;
         for( l = i; l <= numVariables; l++ )
         {
-            if( fabs( Yn[l][i] ) > fabs( t ) )
+            if( abs( Yn[l][i] ) > abs( t ) )
 //            if( fabs( Yn[l][i] ) != 0)
             {
                 a = l;
@@ -133,7 +134,7 @@ double Circuit::determinant(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int
                 Yn[a][l] = p;
             }
         }
-        if( fabs( t ) < EPSILON )
+        if( abs( t ) < EPSILON )
         {
             //printf("Sistema singular\n");
             return 0;
@@ -166,7 +167,7 @@ double Circuit::determinant(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int
     return det;
 }
 
-void Circuit::show(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
+void Circuit::show(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
 {
     for (int i = 1; i <= numVariables; i++)
     {

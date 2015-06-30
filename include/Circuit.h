@@ -13,9 +13,9 @@ class Circuit
         Circuit(Netlist netlist);
         //void evaluate(complex<double> value, complex<double> Yn[MAX_VARIABLsulaES][MAX_VARIABLES + 1]);
         void showVariables();
-        void solve(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables);
-        void show(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables);
-        double determinant(double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables);
+        void solve(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables);
+        void show(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables);
+        complex<double> determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables);
     private:
         Netlist m_Netlist;
         //Matrix m_Matrix;
