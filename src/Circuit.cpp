@@ -7,6 +7,15 @@
 
 using namespace std;
 
+Circuit::Circuit()
+{
+    m_Netlist = Netlist();
+
+    m_NumVariables = m_Netlist.getNumOfVariables();
+    m_NumNodes = m_Netlist.countNodes();
+    m_NumElements = m_Netlist.getNumElements();
+}
+
 Circuit::Circuit(string netlistPath)
 {
     m_Netlist = Netlist(netlistPath);
@@ -25,12 +34,17 @@ Circuit::Circuit(Netlist netlist)
     m_NumElements = m_Netlist.getNumElements();
 }
 
+int Circuit::getNumVariables()
+{
+    return m_NumVariables;
+}
+
 void Circuit::showVariables()
 {
     m_Netlist.showVariables();
 }
 
-void Circuit::applyStamps(complex<double> Yn[MAX_VARIABLES][MAX_VARIABLES + 1], complex<double> sValue)
+void Circuit::applyStamps(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], complex<double> sValue)
 {
     for (int i = 0; i < m_NumElements; i++)
     {
@@ -40,10 +54,10 @@ void Circuit::applyStamps(complex<double> Yn[MAX_VARIABLES][MAX_VARIABLES + 1], 
 
 void Circuit::solve(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
 {
-    int i, j, l, a, counter;
+    int i, j, l, a;
     complex<double> t, p = 0;
 
-    cout << "[INICIO]: " << endl; show(Yn, 2); cout << endl;
+    //cout << "[INICIO]: " << endl; show(Yn, 2); cout << endl;
     for( i = 1; i <= numVariables; i++ )
     {
         t = 0.0;
@@ -51,21 +65,13 @@ void Circuit::solve(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], in
         for( l = i; l <= numVariables; l++ )
         {
             if( abs( Yn[l][i] ) > abs( t ) )
-//            if( fabs( Yn[l][i] ) != 0)
             {
                 a = l;
                 t = Yn[l][i];
-                counter++;
-
-                cout << "counter: " << counter << endl;
-                cout << "l: " << l << endl;
-                cout << "i: " << i<< endl;
-                cout << "Yn: " << Yn[l][i] << endl << endl;
             }
         }
         if( i != a)
         {
-            cout << "[2]: "; cout << endl; show(Yn, 2); cout << endl;
             for( l = 1; l <= numVariables + 1; l++ )
             {
                 p = Yn[i][l];
@@ -75,27 +81,20 @@ void Circuit::solve(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], in
         }
         if( abs( t ) < EPSILON )
         {
-            //printf("Sistema singular\n");
+            cout << "Sistema singular" << endl;
             return;
         }
-        for( j = numVariables + 1; j > 0; j-- ) /* Basta j > i em vez de j > 0 */
+        for( j = numVariables + 1; j > 0; j-- ) /* Basta j>i em vez de j>0 */
         {
-            cout << "[3]: "; cout << endl; show(Yn, 2); cout << endl;
-            //Yn[i][j] /= t;
-            //p = Yn[i][j];
-            p = Yn[i][j]/t;
-            cout << "[4]: "; cout << endl; show(Yn, 2); cout << endl;
+            Yn[i][j] /= t;
+            p = Yn[i][j];
             for( l = 1; l <= numVariables; l++ )
             {
                 if( l != i )
-                    //Yn[l][j] -= Yn[l][i] * p;
-                    Yn[l][j] -= Yn[l][i] * Yn[i][j]/t;
+                    Yn[l][j] -= Yn[l][i] * p;
             }
         }
-        cout << "ITERACAO [" << i << "] :" << endl; show(Yn, 2);  cout << endl;
     }
-
-    cout << "final counter: " << counter << endl;
 }
 
 complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
@@ -104,7 +103,7 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
     complex<double> t, p = 0;
     complex<double> det = 1;
 
-    cout << "[INICIO]: " << endl; show(Yn, 2); cout << endl;
+    //cout << "[INICIO]: " << endl; show(Yn, 2); cout << endl;
     for( i = 1; i <= numVariables; i++ )
     {
         t = 0.0;
@@ -118,15 +117,15 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
                 t = Yn[l][i];
                 counter++;
 
-                cout << "counter: " << counter << endl;
-                cout << "l: " << l << endl;
-                cout << "i: " << i<< endl;
-                cout << "Yn: " << Yn[l][i] << endl << endl;
+//                cout << "counter: " << counter << endl;
+//                cout << "l: " << l << endl;
+//                cout << "i: " << i<< endl;
+//                cout << "Yn: " << Yn[l][i] << endl << endl;
             }
         }
         if( i != a)
         {
-            cout << "[2]: "; cout << endl; show(Yn, 2); cout << endl;
+//            cout << "[2]: "; cout << endl; show(Yn, 2); cout << endl;
             for( l = 1; l <= numVariables + 1; l++ )
             {
                 p = Yn[i][l];
@@ -141,11 +140,11 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
         }
         for( j = numVariables + 1; j > 0; j-- ) /* Basta j > i em vez de j > 0 */
         {
-            cout << "[3]: "; cout << endl; show(Yn, 2); cout << endl;
+//            cout << "[3]: "; cout << endl; show(Yn, 2); cout << endl;
             //Yn[i][j] /= t;
             //p = Yn[i][j];
             p = Yn[i][j]/t;
-            cout << "[4]: "; cout << endl; show(Yn, 2); cout << endl;
+//            cout << "[4]: "; cout << endl; show(Yn, 2); cout << endl;
             for( l = 1; l <= numVariables; l++ )
             {
                 if( l != i )
@@ -153,18 +152,27 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
                     Yn[l][j] -= Yn[l][i] * Yn[i][j]/t;
             }
         }
-        cout << "ITERACAO [" << i << "] :" << endl; show(Yn, 2);  cout << endl;
+//        cout << "ITERACAO [" << i << "] :" << endl; show(Yn, 2);  cout << endl;
     }
 
     for (int i = 1; i <= numVariables; i++)
         det *= Yn[i][i];
 
-    cout << "det antes: " << det << endl;
+//    cout << "det antes: " << det << endl;
     det *= pow(-1, counter);
 
-    cout << "final counter: " << counter << endl;
+//    cout << "final counter: " << counter << endl;
 
     return det;
+}
+
+void Circuit::init(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2])
+{
+    for (int i = 0; i <= m_NumVariables; i++)
+    {
+        for (int j = 0; j <= m_NumVariables + 1; j++)
+            Yn[i][j] = 0;
+    }
 }
 
 void Circuit::show(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
@@ -176,4 +184,9 @@ void Circuit::show(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int
 
         cout << endl;
     }
+}
+
+int Circuit::getSystemMaxOrder()
+{
+    return m_Netlist.getSystemMaxOrder();
 }

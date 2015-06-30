@@ -164,3 +164,18 @@ void Netlist::addCurrentVariable(Element& element)
         m_VariablesList[m_NumVariables] = "jy" + name;
     }
 }
+
+int Netlist::getSystemMaxOrder()
+{
+    int counter = 0;
+
+    for (int i = 0; i < (int)m_Elements.size(). i++)
+    {
+        char type = m_Elements[i].getType();
+
+        if (type == 'C' || type == 'L')
+            counter++;
+    }
+
+    return counter;
+}

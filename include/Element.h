@@ -19,7 +19,7 @@ class Element
         Element(string netlistLine, vector<Element> elementsList);
         void applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables);
         void applyStamp(Polynomial Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables);
-        void applyStamp(complex<double> Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables,
+        void applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables,
                         vector<Element> elementsList, complex<double> sValue);
         void addCurrentVariables(int& numVariables, vector<Element>& elementsList);
         string getName();

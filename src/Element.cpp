@@ -171,7 +171,7 @@ void Element::applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVar
     }
 }
 
-void Element::applyStamp(complex<double> Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables,
+void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables,
                          vector<Element> elementsList, complex<double> sValue)
 {
     if (m_Type == 'R')

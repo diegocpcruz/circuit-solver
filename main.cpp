@@ -85,7 +85,7 @@ int main()
 
     // Teste p/ leitura do netlist
     //double Yn[3][4] = {{0, 0, 0, 0}, {1, 2, 1, 1}, {3, 4, 2, 3}};
-    double Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2];
+    complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2];
 
     Yn[0][0] = Yn[0][1] = Yn[0][2] = Yn[0][3] = Yn[0][4] = Yn[1][0] = Yn[2][0] = Yn[3][0] = 0;
     Yn[1][1] = 5.3; Yn[1][2] = 12.4; Yn[1][3] = 233; Yn[1][4] = 5;
@@ -110,13 +110,17 @@ int main()
 //    cout << "Circuit variables:" << endl;
 //    circuit.showVariables();
 
-    Interpolator interpolator(1);
+    Interpolator interpolator(circuit);
     vector< complex<double> > values;
 
-    values = interpolator.getSValues("LIN", 1, 3);
+    values = interpolator.generateSValues("LIN", 1, 3);
 
     for (int i = 0; i < (int)values.size(); i++)
         cout << "value[" << i << "] - " << values[i] << endl;
+
+    circuit.init(Yn);
+    circuit.applyStamps(Yn, 2);
+    circuit.show(Yn, 3);
 
     return 0;
 }
