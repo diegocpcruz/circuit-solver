@@ -11,6 +11,8 @@ using namespace std;
 Netlist::Netlist()
 {
     m_NumVariables = m_NumElements = 0;
+    m_Norm = 1;
+	m_Radius = 0;
 }
 
 Netlist::Netlist(string netlistPath)
