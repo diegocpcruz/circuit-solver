@@ -10,6 +10,11 @@ using namespace std;
 Interpolator::Interpolator(Circuit circuit)
 {
     m_Circuit = circuit;
+
+    m_SValues = generateSValues(m_Circuit.getMode(), m_Circuit.getRadius(), m_Circuit.getSystemMaxOrder());
+
+    calculateAllDValues();
+    calculateAllEValues();
 }
 
  vector< complex<double> > Interpolator::generateSValues(string mode, double radius, double order)
@@ -51,6 +56,12 @@ Interpolator::Interpolator(Circuit circuit)
          sValue = polar(modulus, phase);
          for (int i = 0; i < order + 1; i++)
          {
+             if (fabs(std::real(sValue)) < EPSILON)
+                sValue = complex<double>(0, std::imag(sValue));
+
+             if (fabs(std::imag(sValue)) < EPSILON)
+                sValue = complex<double>(std::real(sValue), 0);
+
              values.push_back(sValue);
              phase += step;
              sValue = polar(modulus, phase);
@@ -92,7 +103,10 @@ void Interpolator::calculateAllDValues()
         complex<double> sValue = m_SValues[i];
 
         m_Circuit.init(Yn);
+//        m_Circuit.show(Yn, m_Circuit.getNumVariables());
+
         m_Circuit.applyStamps(Yn, sValue);
+//        m_Circuit.show(Yn, m_Circuit.getNumVariables());
 
         dValue = getDValue(Yn, sValue);
 
@@ -118,9 +132,75 @@ void Interpolator::calculateAllEValues()
     }
 }
 
-void Interpolator::buildDMatrix(complex<double> A[MAX_VARIABLES + 1])
+void Interpolator::getAVector(complex<double> A[MAX_VARIABLES + 1])
 {
     complex<double> V[MAX_VARIABLES + 1][MAX_VARIABLES + 2];
+    int order = m_Circuit.getSystemMaxOrder();
+
+    buildInterpolationMatrix(V);
+
+    for (int i = 1; i <= order + 1; i++)
+    {
+//        complex<double> sValue = m_SValues[i - 1];
+        complex<double> dValue = m_DValues[i - 1];
+
+//        V[i][order + 1] = dValue * sValue;
+        V[i][order + 2] = dValue;
+    }
+
+    m_Circuit.solve(V, order + 1);
+    cout << "After solve D: " << endl;
+    m_Circuit.show(V, order + 1);
+
+    for (int i = order + 1; i >= 1; i--)
+        A[i - 1] = V[i][order + 2];
+
+    m_NormFactor = norm(A, order);
+
+    for (int i = order + 1; i >= 1; i--)
+        cout << "A[" << order + 1 - i << "] = " << A[i - 1] << endl;
+
+    cout << endl;
+}
+
+void Interpolator::getBMatrix(complex<double> B[MAX_VARIABLES + 1][MAX_VARIABLES + 1])
+{
+    complex<double> V[MAX_VARIABLES + 1][MAX_VARIABLES + 2];
+    int order = m_Circuit.getSystemMaxOrder();
+
+    for (int i = 1; i <= order; i++)
+    {
+//        vector< complex<double> > eValues = m_EValues[i - 1];
+
+        m_Circuit.init(V);
+        buildInterpolationMatrix(V);
+
+        for (int j = 1; j <= order + 1; j++)
+        {
+//            V[j][order + 1] = m_EValues[j - 1][i - 1] * m_DValues[j - 1] * m_SValues[j - 1];
+            V[j][order + 2] = m_EValues[j - 1][i - 1] * m_DValues[j - 1];
+        }
+
+        m_Circuit.solve(V, order + 1);
+        cout << "After solve E" << i << endl;
+        m_Circuit.show(V, order + 1);
+
+        for (int j = order + 1; j >= 1; j--)
+        {
+            B[j - 1][i - 1] = V[j][order + 2] / m_NormFactor;
+
+//            cout << "B[" << order + 1 - j << "][" << i - 1 << "] = " << B[j - 1][i - 1] << endl;
+        }
+
+        for (int j = order + 1; j >= 1; j--)
+            cout << "B[" << order + 1 - j << "][" << i - 1 << "] = " << B[j - 1][i - 1] << endl;
+
+        cout << endl;
+    }
+}
+
+void Interpolator::buildInterpolationMatrix(complex<double> V[MAX_VARIABLES + 1][MAX_VARIABLES + 2])
+{
     int order = m_Circuit.getSystemMaxOrder();
 
     for (int i = 1; i <= order + 1; i++)
@@ -130,15 +210,30 @@ void Interpolator::buildDMatrix(complex<double> A[MAX_VARIABLES + 1])
         for (int j = 1; j <= order + 1; j++)
             V[i][j] = pow(sValue, order - j + 1);
     }
+}
 
-    for (int i = 1; i <= order + 1; i++)
+double Interpolator::norm(complex<double> A[MAX_VARIABLES + 1], int maxOrder)
+{
+    double normFactor;
+
+    // Retirar lixo numérico
+    for (int i = 0; i < maxOrder + 1; i++)
+        if (abs(A[i]) < EPSILON)
+            A[i] = 0;
+
+    // Encontrar coeficiente de maior grau
+    for (int i = 0; i < maxOrder + 1; i++)
     {
-        complex<double> sValue = m_SValues[i - 1];
-        complex<double> dValue = m_DValues[i - 1];
-
-        V[i][order + 1] = dValue * sValue;
+        if (abs(A[i]) != 0)
+        {
+            normFactor = abs(A[i]);
+            break;
+        }
     }
 
-    m_Circuit.solve(V, order + 1);
-    m_Circuit.show(V, order + 1);
+    // Normaliza
+    for (int i = 0; i < maxOrder + 1; i++)
+        A[i] /= normFactor;
+
+    return normFactor;
 }

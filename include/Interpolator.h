@@ -12,6 +12,9 @@ class Interpolator
     public:
         Interpolator(Circuit circuit);
         vector< complex<double> > generateSValues(string mode, double radius, double order);
+        void getAVector(complex<double> A[MAX_VARIABLES + 1]);
+        void getBMatrix(complex<double> B[MAX_VARIABLES + 1][MAX_VARIABLES + 1]);
+        double norm(complex<double> A[MAX_VARIABLES + 1], int maxOrder);
     private:
         Circuit m_Circuit;
         vector< complex<double> > m_SValues;
@@ -27,7 +30,9 @@ class Interpolator
         void calculateAllEValues();
         void calculateAllDValues();
 
-        void buildDMatrix(complex<double> A[MAX_VARIABLES + 1][MAX_VARIABLES + 2]);
+        void buildInterpolationMatrix(complex<double> VAL[MAX_VARIABLES + 1][MAX_VARIABLES + 2]);
+
+        double m_NormFactor;
 };
 
 #endif // INTERPOLATOR_H

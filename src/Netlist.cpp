@@ -20,7 +20,7 @@ Netlist::Netlist(string netlistPath)
     ifstream netlistFile;
     string line;
 
-    cout << "Netlist netlistPath: " << netlistPath << endl;
+    cout << "Netlist path: " << netlistPath << endl;
 
     netlistFile.open(netlistPath.c_str(), ifstream::in);
 
@@ -36,17 +36,17 @@ Netlist::Netlist(string netlistPath)
 
         if (line[0] == '.')
         {
+            cout << "line: " << line << endl;
+
             stringstream sstream;
             string command, mode, strTemp(line);
             double radius, norm;
-
-            cout << "line: " << line << endl;
 
             sstream.str(strTemp);
 
             sstream >> command >> mode >> radius >> norm;
 
-            cout << "sstream: " << sstream << endl;
+            cout << "sstream: " << sstream.str() << endl;
             cout << "params: " << command << " " << mode << " " << radius << " " << norm << endl;
 
             m_Mode = mode;
@@ -61,6 +61,8 @@ Netlist::Netlist(string netlistPath)
 
         if (currElement.isValid())
         {
+            cout << "line: " << line << endl;
+
             m_Elements.push_back(currElement);
             currElement.showMembers();
         }
@@ -69,6 +71,8 @@ Netlist::Netlist(string netlistPath)
     netlistFile.close();
 
     countNodes();
+    addAllCurrentVariables();
+    showVariables();
 
     m_NumElements = m_Elements.size();
 }
@@ -79,16 +83,23 @@ Netlist::~Netlist()
     m_Elements.clear();
 }
 
+void Netlist::addAllCurrentVariables()
+{
+    for (int i = 0; i < (int)m_Elements.size(); i++)
+        addCurrentVariables(m_Elements[i]);
+}
+
 int Netlist::countNodes()
 {
     char buffer[255];
+    m_VariablesList.push_back("0");
 
     for (int i = 0; i < (int)m_Elements.size(); i++)
     {
         Element currElement = m_Elements[i];
         char type = currElement.getType();
 
-        if (type == 'R' || type == 'I' || type == 'V')
+        if (type == 'R' || type == 'I' || type == 'V' || type == 'C' || type == 'L' )
         {
             increaseNumNodes(string(itoa(currElement.m_A, buffer, 10)));
             increaseNumNodes(string(itoa(currElement.m_B, buffer, 10)));
@@ -102,7 +113,7 @@ int Netlist::countNodes()
         }
     }
 
-    m_NumVariables = m_VariablesList.size();
+    m_NumVariables = m_VariablesList.size() - 1;
 
     return m_NumVariables;
 }
@@ -135,12 +146,13 @@ int Netlist::getNumElements()
     return m_NumElements;
 }
 
-void Netlist::addCurrentVariable(Element& element)
+void Netlist::addCurrentVariables(Element& element) // CHECAR !!!
 {
     char type = element.getType();
     string name = element.getName();
 
-    if (type == 'V' || type == 'E' || type == 'F' || type == 'O')
+//    if (type == 'V' || type == 'E' || type == 'F' || type == 'O' || type == 'L' || type == 'C')
+    if (type == 'V' || type == 'E' || type == 'F' || type == 'O' || type == 'L')
     {
         m_NumVariables++;
 
@@ -153,15 +165,18 @@ void Netlist::addCurrentVariable(Element& element)
         }
 
         element.m_X = m_NumVariables;
-        m_VariablesList[m_NumVariables] = "j" + name;
+//        m_VariablesList[m_NumVariables] = "j" + name;
+        m_VariablesList.push_back( "j" + name);
     }
-    else if (type == 'H')
+    else if (type == 'H' || type == 'K')
     {
         m_NumVariables += 2;
         element.m_X = m_NumVariables - 1;
         element.m_Y = m_NumVariables;
-        m_VariablesList[m_NumVariables - 1] = "jx" + name;
-        m_VariablesList[m_NumVariables] = "jy" + name;
+//        m_VariablesList[m_NumVariables - 1] = "jx" + name;
+//        m_VariablesList[m_NumVariables] = "jy" + name;
+        m_VariablesList.push_back("jx" + name);
+        m_VariablesList.push_back("jy" + name);
     }
 }
 
@@ -169,7 +184,7 @@ int Netlist::getSystemMaxOrder()
 {
     int counter = 0;
 
-    for (int i = 0; i < (int)m_Elements.size(). i++)
+    for (int i = 0; i < (int)m_Elements.size(); i++)
     {
         char type = m_Elements[i].getType();
 
@@ -178,4 +193,9 @@ int Netlist::getSystemMaxOrder()
     }
 
     return counter;
+}
+
+double Netlist::getNorm()
+{
+    return m_Norm;
 }

@@ -27,7 +27,7 @@ Element::Element(string netlistLine, vector<Element> elementsList)
     if (m_Type == 'R')
     {
         sstream >> m_A >> m_B >> m_Value;
-        cout << m_Name << " " << m_A << " " << m_B << " " << m_Value << endl;
+//        cout << m_Name << " " << m_A << " " << m_B << " " << m_Value << endl;
     }
     if (m_Type == 'C' || m_Type == 'L')
     {
@@ -37,7 +37,7 @@ Element::Element(string netlistLine, vector<Element> elementsList)
         if (str_InitialValue.length() != 0)
             m_InitialValue = atoi((str_InitialValue.substr(3, string::npos)).c_str());
 
-        cout << m_Name << " " << m_A << " " << m_B << " " << m_Value << " " << m_InitialValue << endl;
+//        cout << m_Name << " " << m_A << " " << m_B << " " << m_Value << " " << m_InitialValue << endl;
     }
     if (m_Type == 'K')
     {
@@ -63,32 +63,31 @@ Element::Element(string netlistLine, vector<Element> elementsList)
             }
         }
 
-        cout << m_Name << " " << m_A << " " << m_B << " " << m_C << " "
-             << m_D << " " << m_Value << endl;
+//        cout << m_Name << " " << m_A << " " << m_B << " " << m_C << " "
+//             << m_D << " " << m_Value << endl;
     }
     if (m_Type == 'I' || m_Type == 'V')
     {
         sstream >> m_A >> m_B >> m_Value >> m_Mode;
-        cout << m_Name << " " << m_A << " " << m_B << " " << m_Value
-             << " " << m_Mode << endl;
+//        cout << m_Name << " " << m_A << " " << m_B << " " << m_Value
+//             << " " << m_Mode << endl;
     }
     else if (m_Type == 'G' || m_Type == 'E' || m_Type == 'F' || m_Type == 'H')
     {
         sstream >> m_A >> m_B >> m_C >> m_D >> m_Value;
-        cout << m_Name << " " << m_A << " " << m_B << " " << m_C << " "
-             << m_D << " " << m_Value << endl;
+//        cout << m_Name << " " << m_A << " " << m_B << " " << m_C << " "
+//             << m_D << " " << m_Value << endl;
     }
     else if (m_Type == 'O')
     {
         sstream >> m_A >> m_B >> m_C >> m_D;
-        cout << m_Name << " " << m_A << " " << m_B << " " << m_C << " "
-             << m_D << " " << endl;
+//        cout << m_Name << " " << m_A << " " << m_B << " " << m_C << " "
+//             << m_D << " " << endl;
     }
 }
 
 void Element::showMembers()
 {
-    cout << "[ELEMENT DESCRIPTION]" << endl;
     cout << "Name: " << m_Name << endl;
     cout << "Type: " << m_Type << endl;
     cout << "Value: " << m_Value << endl;
@@ -101,78 +100,78 @@ void Element::showMembers()
     cout << "Y: " << m_Y << endl << endl;
 }
 
-void Element::applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables)
-{
-    if (m_Type == 'R')
-    {
-        double G = 1/m_Value;
-
-        Yn[m_A][m_A] += G;
-        Yn[m_B][m_B] += G;
-        Yn[m_A][m_B] -= G;
-        Yn[m_B][m_A] -= G;
-    }
-    else if (m_Type == 'G')
-    {
-        Yn[m_A][m_C] += m_Value;
-        Yn[m_B][m_D] += m_Value;
-        Yn[m_A][m_D] -= m_Value;
-        Yn[m_B][m_C] -= m_Value;
-    }
-    else if (m_Type == 'I')
-    {
-        Yn[m_A][numVariables + 1] -= m_Value;
-        Yn[m_B][numVariables + 1] += m_Value;
-    }
-    else if (m_Type == 'V')
-    {
-        Yn[m_A][m_X] += 1;
-        Yn[m_B][m_X] -= 1;
-        Yn[m_X][m_A] -= 1;
-        Yn[m_X][m_B] += 1;
-        Yn[m_X][numVariables + 1] -= m_Value;
-    }
-    else if (m_Type == 'E')
-    {
-        Yn[m_A][m_X] += 1;
-        Yn[m_B][m_X] -= 1;
-        Yn[m_X][m_A] -= 1;
-        Yn[m_X][m_B] += 1;
-        Yn[m_X][m_C] += m_Value;
-        Yn[m_X][m_D] -= m_Value;
-    }
-    else if (m_Type == 'F')
-    {
-        Yn[m_A][m_X] += m_Value;
-        Yn[m_B][m_X] -= m_Value;
-        Yn[m_C][m_X] += 1;
-        Yn[m_D][m_X] -= 1;
-        Yn[m_X][m_C] -= 1;
-        Yn[m_X][m_D] += 1;
-    }
-    else if (m_Type == 'H')
-    {
-        Yn[m_A][m_Y] += 1;
-        Yn[m_B][m_Y] -= 1;
-        Yn[m_C][m_X] += 1;
-        Yn[m_D][m_X] -= 1;
-        Yn[m_Y][m_A] -= 1;
-        Yn[m_Y][m_B] += 1;
-        Yn[m_X][m_C] -= 1;
-        Yn[m_X][m_D] += 1;
-        Yn[m_Y][m_X] += m_Value;
-    }
-    else if (m_Type == 'O')
-    {
-        Yn[m_A][m_X] += 1;
-        Yn[m_B][m_X] -= 1;
-        Yn[m_X][m_C] += 1;
-        Yn[m_X][m_D] -= 1;
-    }
-}
+//void Element::applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables)
+//{
+//    if (m_Type == 'R')
+//    {
+//        double G = 1/m_Value;
+//
+//        Yn[m_A][m_A] += G;
+//        Yn[m_B][m_B] += G;
+//        Yn[m_A][m_B] -= G;
+//        Yn[m_B][m_A] -= G;
+//    }
+//    else if (m_Type == 'G')
+//    {
+//        Yn[m_A][m_C] += m_Value;
+//        Yn[m_B][m_D] += m_Value;
+//        Yn[m_A][m_D] -= m_Value;
+//        Yn[m_B][m_C] -= m_Value;
+//    }
+//    else if (m_Type == 'I')
+//    {
+//        Yn[m_A][numVariables + 1] -= m_Value;
+//        Yn[m_B][numVariables + 1] += m_Value;
+//    }
+//    else if (m_Type == 'V')
+//    {
+//        Yn[m_A][m_X] += 1;
+//        Yn[m_B][m_X] -= 1;
+//        Yn[m_X][m_A] -= 1;
+//        Yn[m_X][m_B] += 1;
+//        Yn[m_X][numVariables + 1] -= m_Value;
+//    }
+//    else if (m_Type == 'E')
+//    {
+//        Yn[m_A][m_X] += 1;
+//        Yn[m_B][m_X] -= 1;
+//        Yn[m_X][m_A] -= 1;
+//        Yn[m_X][m_B] += 1;
+//        Yn[m_X][m_C] += m_Value;
+//        Yn[m_X][m_D] -= m_Value;
+//    }
+//    else if (m_Type == 'F')
+//    {
+//        Yn[m_A][m_X] += m_Value;
+//        Yn[m_B][m_X] -= m_Value;
+//        Yn[m_C][m_X] += 1;
+//        Yn[m_D][m_X] -= 1;
+//        Yn[m_X][m_C] -= 1;
+//        Yn[m_X][m_D] += 1;
+//    }
+//    else if (m_Type == 'H')
+//    {
+//        Yn[m_A][m_Y] += 1;
+//        Yn[m_B][m_Y] -= 1;
+//        Yn[m_C][m_X] += 1;
+//        Yn[m_D][m_X] -= 1;
+//        Yn[m_Y][m_A] -= 1;
+//        Yn[m_Y][m_B] += 1;
+//        Yn[m_X][m_C] -= 1;
+//        Yn[m_X][m_D] += 1;
+//        Yn[m_Y][m_X] += m_Value;
+//    }
+//    else if (m_Type == 'O')
+//    {
+//        Yn[m_A][m_X] += 1;
+//        Yn[m_B][m_X] -= 1;
+//        Yn[m_X][m_C] += 1;
+//        Yn[m_X][m_D] -= 1;
+//    }
+//}
 
 void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables,
-                         vector<Element> elementsList, complex<double> sValue)
+                         vector<Element> elementsList, complex<double> sValue, double norm)
 {
     if (m_Type == 'R')
     {
@@ -190,25 +189,34 @@ void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2
         Yn[m_A][m_D] -= m_Value;
         Yn[m_B][m_C] -= m_Value;
     }
-    else if (m_Type == 'C')
+    else if (m_Type == 'C') // CONSERTAR!!!
     {
-        Yn[m_A][m_A] += sValue * m_Value;
-        Yn[m_B][m_B] += sValue * m_Value;
-        Yn[m_A][m_B] -= sValue * m_Value;
-        Yn[m_B][m_A] -= sValue * m_Value;
-        Yn[m_A][numVariables + 1] += m_Value * m_InitialValue;
-        Yn[m_B][numVariables + 1] -= m_Value * m_InitialValue;
+        Yn[m_A][m_A] += sValue * m_Value * norm;
+        Yn[m_B][m_B] += sValue * m_Value * norm;
+        Yn[m_A][m_B] -= sValue * m_Value * norm;
+        Yn[m_B][m_A] -= sValue * m_Value * norm;
+        Yn[m_A][numVariables + 1] += m_Value * m_InitialValue * norm;
+        Yn[m_B][numVariables + 1] -= m_Value * m_InitialValue * norm;
     }
-    else if (m_Type == 'L')
+//    else if (m_Type == 'L')
+//    {
+//        Yn[m_A][m_A] += 1.0 / (sValue * m_Value);
+//        Yn[m_B][m_B] += 1.0 / (sValue * m_Value);
+//        Yn[m_A][m_B] -= 1.0 / (sValue * m_Value);
+//        Yn[m_B][m_A] -= 1.0 / (sValue * m_Value);
+//        Yn[m_A][numVariables + 1] -= m_InitialValue / sValue;
+//        Yn[m_B][numVariables + 1] += m_InitialValue / sValue;
+//    }
+    else if (m_Type == 'L') // CHECAR !!!
     {
-        Yn[m_A][m_A] += 1.0 / (sValue * m_Value);
-        Yn[m_B][m_B] += 1.0 / (sValue * m_Value);
-        Yn[m_A][m_B] -= 1.0 / (sValue * m_Value);
-        Yn[m_B][m_A] -= 1.0 / (sValue * m_Value);
-        Yn[m_A][numVariables + 1] -= m_InitialValue / sValue;
-        Yn[m_B][numVariables + 1] += m_InitialValue / sValue;
+        Yn[m_A][m_X] += 1;
+        Yn[m_B][m_X] -= 1;
+        Yn[m_X][m_A] -= 1;
+        Yn[m_X][m_B] += 1;
+        Yn[m_X][m_X] += sValue * m_Value * norm;
+        Yn[m_X][numVariables + 1] += m_Value * m_InitialValue * norm;
     }
-    else if (m_Type == 'K')
+    else if (m_Type == 'K') // CONSERTAR!!!
     {
         double L1, L2;
         double initialValueL1, initialValueL2;
@@ -352,6 +360,35 @@ char Element::getType()
 //    else // Known node
 //    {
 //        return i;
+//    }
+//}
+
+//void Element::addCurrentVariables(int& numVariables, vector<string>& variablesList)
+//{
+//    if (m_Type == 'V' || m_Type == 'E' || m_Type == 'F' || m_Type == 'O')
+//    {
+//        numVariables++;
+//
+//        if (numVariables> MAX_VARIABLES)
+//        {
+//            cout << "As correntes extra excederam o numero de variaveis permitido (" << MAX_VARIABLES << ")" << endl;
+//            return;
+//        }
+//
+//        x = numVariables;
+//        variablesList[numVariables] = "j" + name;
+//    }
+//    else if (m_Type == 'C')
+//    {
+//
+//    }
+//    else if (m_Type=='H')
+//    {
+//        numVariables += 2;
+//        m_X = numVariables - 1;
+//        m_Y = numVariables;
+//        variablesList[numVariables - 1] = "jx" + m_Name;
+//        variablesList[numVariables] = "jy" + m_Name;
 //    }
 //}
 

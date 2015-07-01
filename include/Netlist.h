@@ -19,14 +19,17 @@ class Netlist
         int getNumOfVariables();
         int getNumElements();
         int getSystemMaxOrder();
+        double getNorm();
         string m_Mode;
-        double m_Radius, m_Norm;
+        double m_Radius;
+        double m_Norm;
     private:
         int m_NumVariables;
         int m_NumElements;
         vector<string> m_VariablesList;
 
-        void addCurrentVariable(Element& element);
+        void addCurrentVariables(Element& element);
+        void addAllCurrentVariables();
         void increaseNumNodes(string nodeName);
 };
 

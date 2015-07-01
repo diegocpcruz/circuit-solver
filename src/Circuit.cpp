@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <complex>
+#include <cstdio>
 #include "Netlist.h"
 #include "Circuit.h"
 #include "Element.h"
@@ -48,7 +49,9 @@ void Circuit::applyStamps(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 
 {
     for (int i = 0; i < m_NumElements; i++)
     {
-        m_Netlist.m_Elements[i].applyStamp(Yn, m_NumVariables, m_Netlist.m_Elements, sValue);
+        m_Netlist.m_Elements[i].applyStamp(Yn, m_NumVariables, m_Netlist.m_Elements, sValue, m_Netlist.getNorm());
+        cout << "After stamp of (" << m_Netlist.m_Elements[i].getName() << ") | s = " << sValue << endl;
+        show(Yn, m_NumVariables);
     }
 }
 
@@ -159,7 +162,7 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
         det *= Yn[i][i];
 
 //    cout << "det antes: " << det << endl;
-    det *= pow(-1, counter);
+    //det *= pow(-1, counter);
 
 //    cout << "final counter: " << counter << endl;
 
@@ -175,18 +178,48 @@ void Circuit::init(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2])
     }
 }
 
+string Circuit::getMode()
+{
+    return m_Netlist.m_Mode;
+}
+
+double Circuit::getNorm()
+{
+    return m_Netlist.m_Norm;
+}
+
+double Circuit::getRadius()
+{
+    return m_Netlist.m_Radius;
+}
+
 void Circuit::show(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
 {
+//    cout << " >> " << endl;
+
     for (int i = 1; i <= numVariables; i++)
     {
-        for (int j = 1; j <= numVariables + 1; j++)
-            cout << Yn[i][j] << " ";
+        cout << "| ";
 
-        cout << endl;
+        for (int j = 1; j <= numVariables + 1; j++)
+        {
+            if (abs(Yn[i][j]) < EPSILON && j != numVariables + 1) printf("............. ");
+            else printf("%+.2lf %+.2lf j ", std::real(Yn[i][j]), std::imag(Yn[i][j]));
+        }
+
+        cout << " |" << endl;
     }
+
+//    cout << " << " << endl << endl;
+    cout << endl << endl;
 }
 
 int Circuit::getSystemMaxOrder()
 {
     return m_Netlist.getSystemMaxOrder();
 }
+
+//int Circuit::getNumNodes()
+//{
+//    return m_Netlist.getnum
+//}
