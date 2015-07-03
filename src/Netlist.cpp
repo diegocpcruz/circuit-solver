@@ -20,7 +20,7 @@ Netlist::Netlist(string netlistPath)
     ifstream netlistFile;
     string line;
 
-    cout << "Netlist path: " << netlistPath << endl;
+    cout << "Netlist path: " << netlistPath << endl << endl;;
 
     netlistFile.open(netlistPath.c_str(), ifstream::in);
 
@@ -36,7 +36,7 @@ Netlist::Netlist(string netlistPath)
 
         if (line[0] == '.')
         {
-            cout << "line: " << line << endl;
+            cout << line << endl;
 
             stringstream sstream;
             string command, mode, strTemp(line);
@@ -45,9 +45,6 @@ Netlist::Netlist(string netlistPath)
             sstream.str(strTemp);
 
             sstream >> command >> mode >> radius >> norm;
-
-            cout << "sstream: " << sstream.str() << endl;
-            cout << "params: " << command << " " << mode << " " << radius << " " << norm << endl;
 
             m_Mode = mode;
             m_Radius = radius;
@@ -61,12 +58,15 @@ Netlist::Netlist(string netlistPath)
 
         if (currElement.isValid())
         {
-            cout << "line: " << line << endl;
+            cout << line << endl;
 
             m_Elements.push_back(currElement);
-            currElement.showMembers();
+//            currElement.showMembers();
         }
+
     }
+
+    cout << endl;
 
     netlistFile.close();
 
@@ -120,9 +120,10 @@ int Netlist::countNodes()
 
 void Netlist::showVariables()
 {
-    for (int i = 0; i < (int)m_VariablesList.size(); i++)
+    for (int i = 0; i < m_NumVariables; i++)
         cout << "Variable [" << i << "] : " << m_VariablesList[i] << endl;
 
+    cout << endl;
 }
 
 void Netlist::increaseNumNodes(string nodeName)
@@ -168,7 +169,7 @@ void Netlist::addCurrentVariables(Element& element) // CHECAR !!!
 //        m_VariablesList[m_NumVariables] = "j" + name;
         m_VariablesList.push_back( "j" + name);
     }
-    else if (type == 'H' || type == 'K')
+    else if (type == 'H')
     {
         m_NumVariables += 2;
         element.m_X = m_NumVariables - 1;

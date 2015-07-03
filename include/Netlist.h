@@ -23,10 +23,10 @@ class Netlist
         string m_Mode;
         double m_Radius;
         double m_Norm;
+        vector<string> m_VariablesList;
     private:
         int m_NumVariables;
         int m_NumElements;
-        vector<string> m_VariablesList;
 
         void addCurrentVariables(Element& element);
         void addAllCurrentVariables();

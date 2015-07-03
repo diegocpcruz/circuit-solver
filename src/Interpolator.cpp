@@ -2,6 +2,9 @@
 #include <complex>
 #include <cmath>
 #include <iostream>
+#include <cstdio>
+#include <fstream>
+#include <cstdlib>
 #include "Interpolator.h"
 #include "Circuit.h"
 
@@ -141,11 +144,11 @@ void Interpolator::getAVector(complex<double> A[MAX_VARIABLES + 1])
 
     for (int i = 1; i <= order + 1; i++)
     {
-//        complex<double> sValue = m_SValues[i - 1];
+        complex<double> sValue = m_SValues[i - 1];
         complex<double> dValue = m_DValues[i - 1];
 
-//        V[i][order + 1] = dValue * sValue;
-        V[i][order + 2] = dValue;
+        if (m_Circuit.haveStep()) V[i][order + 2] = dValue * sValue;
+        else V[i][order + 2] = dValue;
     }
 
     m_Circuit.solve(V, order + 1);
@@ -157,8 +160,11 @@ void Interpolator::getAVector(complex<double> A[MAX_VARIABLES + 1])
 
     normalizeA(A, order);
 
+    // Exibe na tela
+    cout << "Denominador: " << endl;
     for (int i = order + 1; i >= 1; i--)
-        cout << "A[" << order + 1 - i << "] = " << A[i - 1] << endl;
+        //if (order - i + 1 <= m_OrderD)
+            printf("a%d = %.4lf\n", order - i + 1, std::real(A[i - 1]));
 
     cout << endl;
 }
@@ -167,40 +173,45 @@ void Interpolator::getBMatrix(complex<double> B[MAX_VARIABLES + 1][MAX_VARIABLES
 {
     complex<double> V[MAX_VARIABLES + 1][MAX_VARIABLES + 2];
     int order = m_Circuit.getSystemMaxOrder();
+    int numVariables = m_Circuit.getNumVariables();
 
-    for (int coluna = 1; coluna <= order; coluna++)
+    for (int j = 1; j <= numVariables; j++)
     {
-//        vector< complex<double> > eValues = m_EValues[i - 1];
-
         m_Circuit.init(V);
         buildInterpolationMatrix(V);
 
-        for (int linha = 1; linha <= order + 1; linha++)
+        for (int i = 1; i <= order + 1; i++)
         {
-//            V[j][order + 1] = m_EValues[j - 1][i - 1] * m_DValues[j - 1] * m_SValues[j - 1];
-            V[linha][order + 2] = m_EValues[linha - 1][coluna - 1] * m_DValues[linha - 1];
+            if (m_Circuit.haveStep()) V[i][order + 2] = m_EValues[i - 1][j - 1] * m_DValues[i - 1] * m_SValues[j - 1];
+            else V[i][order + 2] = m_EValues[i - 1][j - 1] * m_DValues[i - 1];
         }
 
         m_Circuit.solve(V, order + 1);
-        cout << "After solve E" << coluna << endl;
-        m_Circuit.show(V, order + 1);
+//        cout << "After solve E" << j << endl;
+//        m_Circuit.show(V, order + 1);
 
-        normalizeB(B, order);
-        for (int linha = order + 1; linha >= 1; linha--)
+        for (int i = 1; i <= order + 1; i++)
+            B[i - 1][j - 1] = V[i][order + 2];
+    }
+
+    normalizeB(B, order);
+
+    // Exibe na tela
+    for (int j = 1; j <= numVariables; j++)
+    {
+//        bool found = false;
+
+        cout << "Numerador " << j << " (" << m_Circuit.m_Netlist.m_VariablesList[j] << "):" << endl;
+        for (int i = order + 1; i >= 1; i--)
         {
-        	if (abs(V[linha][order + 2]) < EPSILON)
-        		B[linha - 1][coluna - 1] = 0;
-        	else
-        		B[linha - 1][coluna - 1] = V[linha][order + 2] / m_NormVectorB[coluna -1];
-
-//            cout << "B[" << order + 1 - j << "][" << i - 1 << "] = " << B[j - 1][i - 1] << endl;
+            if (order - i + 1 <= m_OrdersB[j - 1])
+            {
+//                printf("b%d = %+.4lf %+.4lf j\n", order - i + 1, std::real(B[i - 1][j - 1]), std::imag( B[i - 1][j - 1]));
+                printf("b%d = %.4lf\n", order - i + 1, std::real(B[i - 1][j - 1]));
+            }
         }
 
-//        Exibe na tela
-        for (int j = order + 1; j >= 1; j--)
-            cout << "B[" << order + 1 - j << "][" << coluna - 1 << "] = " << B[j - 1][coluna - 1] << endl;
-
-        cout << endl;
+        printf("cte: %.4lf\n\n", m_ConstantsB[j - 1]);
     }
 }
 
@@ -221,17 +232,20 @@ void Interpolator::normalizeA(complex<double> A[MAX_VARIABLES + 1], int maxOrder
 {
     double normFactor;
 
-    // Retirar lixo numérico
+    // Retira lixo numérico
     for (int i = 0; i < maxOrder + 1; i++)
+    {
         if (abs(A[i]) < EPSILON)
             A[i] = 0;
+    }
 
-    // Encontrar coeficiente de maior grau
+    // Encontra coeficiente de maior grau
     for (int i = 0; i < maxOrder + 1; i++)
     {
         if (abs(A[i]) != 0)
         {
-            normFactor = abs(A[i]);
+            normFactor = std::real(A[i]);
+            m_OrderD = maxOrder - i;
             break;
         }
     }
@@ -243,26 +257,117 @@ void Interpolator::normalizeA(complex<double> A[MAX_VARIABLES + 1], int maxOrder
     m_NormA = normFactor;
 }
 
-void Interpolator::normalizeB(complex<double> B[MAX_VARIABLES + 1][MAX_VARIABLES + 1], int order)
+void Interpolator::normalizeB(complex<double> B[MAX_VARIABLES + 1][MAX_VARIABLES + 1], int maxOrder)
 {
-	double normFactor = 1;
-	m_NormVectorB.resize(order);
+    int numVariables = m_Circuit.getNumVariables();
 
-    // Retira lixo numérico e seta o maior coeficiente de cada coluna da matriz B.
-    for (int coluna = 0; coluna < order + 1; coluna++)
+    m_ConstantsB.clear();
+
+    // Retira lixo numérico e normaliza polinômio numerador
+    for (int i = 0; i < maxOrder + 1; i++)
     {
-    	for (int linha = 0; linha < order + 1; linha++)
-    	{
-    		if (abs(B[linha][coluna]) < EPSILON)
-    			B[linha][coluna] = 0;
-    		if (abs(B[linha][coluna]) > normFactor)
-    			normFactor = abs(B[linha][coluna]);
-    	}
-    	m_NormVectorB[coluna] = normFactor;
+        for (int j = 0; j < numVariables; j++)
+        {
+            if (abs(B[i][j]) < EPSILON)
+                B[i][j] = 0;
 
+            B[i][j] /= m_NormA;
+        }
     }
 
-	for (unsigned i = 0; i < m_NormVectorB.size(); i++)
-		cout << "m_NormVectorB[" << i << "]" << m_NormVectorB[i] << endl;
+    m_OrdersB.assign(numVariables, 0);
+    for (int j = 0; j < numVariables; j++)
+    {
+        double constant = 1;
 
+        // Encontra coeficiente de maior grau
+        for (int i = 0; i < maxOrder + 1; i++)
+        {
+            if (abs(B[i][j]) != 0)
+            {
+                constant = std::real(B[i][j]);
+                m_OrdersB[j] = maxOrder - i;
+                break;
+            }
+        }
+
+        // Adiciona constante ao vetor
+        m_ConstantsB.push_back(constant);
+
+        // Normaliza
+        for (int i = 0; i < maxOrder + 1; i++)
+            B[i][j] /= constant;
+
+    }
+}
+
+void Interpolator::writeResultsToFile(complex<double> A[MAX_VARIABLES + 1],
+                                      complex<double> B[MAX_VARIABLES + 1][MAX_VARIABLES + 1],
+                                      string name)
+{
+    int maxOrder = m_Circuit.getSystemMaxOrder();
+
+    // Arquivo para coeficientes do DENOMINADOR
+    string denFileName(name + ".d");
+    ofstream denominatorFile (denFileName.c_str());
+
+    if (denominatorFile.is_open())
+    {
+        char buffer[255];
+
+        denominatorFile << m_OrderD << endl;
+
+        // Exibe na tela
+        for (int i = maxOrder + 1; i >= 1; i--)
+        {
+            if (maxOrder - i + 1 <= m_OrderD)
+            {
+                sprintf(buffer, "%.4lf\n", std::real(A[i - 1]));
+                denominatorFile << buffer;
+            }
+        }
+
+        sprintf(buffer, "%.4lf\n", 1.0);
+        denominatorFile << buffer;
+
+        sprintf(buffer, "%.4lf\n", m_Circuit.getNorm());
+        denominatorFile << buffer;
+
+        denominatorFile.close();
+    }
+
+
+    int numVariables = m_Circuit.getNumVariables();
+    for (int j = 1; j <= numVariables; j++)
+    {
+        // Arquivo para coeficientes do DENOMINADOR
+        char bufferName[255];
+        string numFileName(name + ".n" + itoa(j, bufferName, 10));
+        ofstream numeratorFile (numFileName.c_str());
+
+        if (numeratorFile.is_open())
+        {
+            char buffer[255];
+
+            numeratorFile << m_OrderD << endl;
+
+            // Exibe na tela
+            for (int i = maxOrder + 1; i >= 1; i--)
+            {
+                if (maxOrder - i + 1 <= m_OrdersB[j - 1])
+                {
+                    sprintf(buffer, "%.4lf\n", std::real(B[i - 1][j - 1]));
+                    numeratorFile << buffer;
+                }
+            }
+
+            sprintf(buffer, "%.4lf\n", m_ConstantsB[j - 1]);
+            numeratorFile << buffer;
+
+            sprintf(buffer, "%.4lf\n", m_Circuit.getNorm());
+            numeratorFile << buffer;
+
+            numeratorFile.close();
+        }
+    }
 }

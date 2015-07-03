@@ -45,13 +45,26 @@ void Circuit::showVariables()
     m_Netlist.showVariables();
 }
 
+bool Circuit::haveStep()
+{
+    bool haveStep = false;
+
+    for (int i = 0; i < m_NumElements; i++)
+    {
+        if (m_Netlist.m_Elements[i].m_Mode == "DEGRAU")
+            haveStep = true;
+    }
+
+    return haveStep;
+}
+
 void Circuit::applyStamps(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], complex<double> sValue)
 {
     for (int i = 0; i < m_NumElements; i++)
     {
         m_Netlist.m_Elements[i].applyStamp(Yn, m_NumVariables, m_Netlist.m_Elements, sValue, m_Netlist.getNorm());
-        cout << "After stamp of (" << m_Netlist.m_Elements[i].getName() << ") | s = " << sValue << endl;
-        show(Yn, m_NumVariables);
+//        cout << "After stamp of (" << m_Netlist.m_Elements[i].getName() << ") | s = " << sValue << endl;
+//        show(Yn, m_NumVariables);
     }
 }
 
@@ -162,8 +175,9 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
         det *= Yn[i][i];
 
 //    cout << "det antes: " << det << endl;
-    //det *= pow(-1, counter);
+    det *= pow(-1, counter);
 
+//     cout << "det depois: " << det << endl;
 //    cout << "final counter: " << counter << endl;
 
     return det;

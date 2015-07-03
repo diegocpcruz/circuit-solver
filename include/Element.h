@@ -15,6 +15,7 @@ class Element
     public:
         int m_A, m_B, m_C, m_D;
         int m_X, m_Y;
+        string m_Mode;
 
         Element(string netlistLine, vector<Element> elementsList);
 //        void applyStamp(double Yn[MAX_VARIABLES][MAX_VARIABLES + 1], int numVariables);
@@ -31,7 +32,6 @@ class Element
         char m_Type;
         double m_Value;
         double m_InitialValue;
-        string m_Mode;
 };
 
 #endif // ELEMENT_H

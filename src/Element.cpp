@@ -216,10 +216,65 @@ void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2
         Yn[m_X][m_X] += sValue * m_Value * norm;
         Yn[m_X][numVariables + 1] += m_Value * m_InitialValue * norm;
     }
+//    else if (m_Type == 'K') // CONSERTAR!!!
+//    {
+//        double L1, L2;
+//        double initialValueL1, initialValueL2;
+//
+//        for (int i = 0; i < (int)elementsList.size(); i++)
+//        {
+//            Element el = elementsList[i];
+//
+//            if (el.getType() == 'L' && el.m_A == m_A && el.m_B == m_B)
+//            {
+//                L1 = el.m_Value;
+//                initialValueL1 = el.m_InitialValue;
+//            }
+//        }
+//
+//        for (int i = 0; i < (int)elementsList.size(); i++)
+//        {
+//            Element el = elementsList[i];
+//
+//            if (el.getType() == 'L' && el.m_A == m_C && el.m_B == m_D)
+//            {
+//                L2 = el.m_Value;
+//                initialValueL2 = el.m_InitialValue;
+//            }
+//        }
+//
+//        double r11, r22, r12, r21;
+//
+//        r11 = L2 / (L1 * L2 - m_Value * m_Value);
+//        r22 = L1 / (L1 * L2 - m_Value * m_Value);
+//        r12 = r21 = - m_Value / (L1 * L2 - m_Value * m_Value);
+//
+//        Yn[m_A][m_A] += r11 / sValue;
+//        Yn[m_B][m_B] += r11 / sValue;
+//        Yn[m_C][m_C] += r22 / sValue;
+//        Yn[m_D][m_D] += r22 / sValue;
+//        Yn[m_A][m_B] -= r11 / sValue;
+//        Yn[m_B][m_A] -= r11 / sValue;
+//        Yn[m_A][m_C] += r12 / sValue;
+//        Yn[m_C][m_A] += r21 / sValue;
+//        Yn[m_A][m_D] -= r12 / sValue;
+//        Yn[m_D][m_A] -= r21 / sValue;
+//        Yn[m_B][m_C] -= r12 / sValue;
+//        Yn[m_C][m_B] -= r21 / sValue;
+//        Yn[m_B][m_D] += r12 / sValue;
+//        Yn[m_D][m_B] += r21 / sValue;
+//        Yn[m_C][m_D] -= r22 / sValue;
+//        Yn[m_D][m_C] -= r22 / sValue;
+//        Yn[m_A][numVariables + 1] -= initialValueL1 / sValue;
+//        Yn[m_B][numVariables + 1] += initialValueL1 / sValue;
+//        Yn[m_C][numVariables + 1] -= initialValueL2 / sValue;
+//        Yn[m_D][numVariables + 1] += initialValueL2 / sValue;
+//    }
     else if (m_Type == 'K') // CONSERTAR!!!
     {
         double L1, L2;
         double initialValueL1, initialValueL2;
+        int X, Y;
 
         for (int i = 0; i < (int)elementsList.size(); i++)
         {
