@@ -11,7 +11,7 @@ int main()
 {
 //    Netlist netlist(".\\data\\simples.net");
 //    Netlist netlist(".\\data\\tesla.net");
-    Netlist netlist(".\\data\\leapfrog5.net");
+//    Netlist netlist(".\\data\\leapfrog5.net");
 //    Netlist netlist(".\\data\\but3.net");
 //    Netlist netlist(".\\data\\but3ic.net");
 //    Netlist netlist(".\\data\\but3id.net");
@@ -22,13 +22,13 @@ int main()
 //    Netlist netlist(".\\data\\el51Hz.net");
 //    cout << "Initial number of variables: " << netlist.getNumOfVariables() << endl;
 //    netlist.showVariables();
-//    string netlistPath;
+    string netlistPath;
+
+    cout << "Caminho para o netlist: ";
+    cin >> netlistPath;
+    cout << endl;
 //
-//    cout << "Caminho para o netlist: ";
-//    cin >> netlistPath;
-//    cout << endl;
-//
-//    Netlist netlist(netlistPath);
+    Netlist netlist(netlistPath);
     // Teste p/ inicialização do circuito
 
     Circuit circuit(netlist);
