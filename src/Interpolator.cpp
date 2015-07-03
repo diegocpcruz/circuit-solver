@@ -16,6 +16,11 @@ Interpolator::Interpolator(Circuit circuit)
 
     m_SValues = generateSValues(m_Circuit.getMode(), m_Circuit.getRadius(), m_Circuit.getSystemMaxOrder());
 
+    for (int i = 0; i < (int)m_SValues.size(); i++)
+        cout << "S" << i << " = " << m_SValues[i] << endl;
+
+    cout << endl;
+
     calculateAllDValues();
     calculateAllEValues();
 }
@@ -39,7 +44,7 @@ Interpolator::Interpolator(Circuit circuit)
          sValue = complex<double>(-real , imag);
          for (int i = 0; i < order + 1; i++)
          {
-             if (std::real(sValue) == 0)
+             if (std::real(sValue) < EPSILON)
              {
                  sValue += complex<double>(step/2 , imag);
                  values.push_back(sValue);

@@ -63,8 +63,8 @@ void Circuit::applyStamps(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 
     for (int i = 0; i < m_NumElements; i++)
     {
         m_Netlist.m_Elements[i].applyStamp(Yn, m_NumVariables, m_Netlist.m_Elements, sValue, m_Netlist.getNorm());
-//        cout << "After stamp of (" << m_Netlist.m_Elements[i].getName() << ") | s = " << sValue << endl;
-//        show(Yn, m_NumVariables);
+        cout << "After stamp of (" << m_Netlist.m_Elements[i].getName() << ") | s = " << sValue << endl;
+        show(Yn, m_NumVariables);
     }
 }
 

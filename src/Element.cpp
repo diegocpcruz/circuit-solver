@@ -274,7 +274,6 @@ void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2
     {
         double L1, L2;
         double initialValueL1, initialValueL2;
-        int X, Y;
 
         for (int i = 0; i < (int)elementsList.size(); i++)
         {
@@ -282,8 +281,9 @@ void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2
 
             if (el.getType() == 'L' && el.m_A == m_A && el.m_B == m_B)
             {
-                L1 = el.m_Value;
+                L1 = el.m_Value * norm;
                 initialValueL1 = el.m_InitialValue;
+                m_X = el.m_X;
             }
         }
 
@@ -293,37 +293,29 @@ void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2
 
             if (el.getType() == 'L' && el.m_A == m_C && el.m_B == m_D)
             {
-                L2 = el.m_Value;
+                L2 = el.m_Value * norm;
                 initialValueL2 = el.m_InitialValue;
+                m_Y = el.m_X;
             }
         }
 
-        double r11, r22, r12, r21;
+        Yn[m_X][m_A] -= 1;
+        Yn[m_X][m_B] += 1;
+        Yn[m_Y][m_C] -= 1;
+        Yn[m_Y][m_D] += 1;
 
-        r11 = L2 / (L1 * L2 - m_Value * m_Value);
-        r22 = L1 / (L1 * L2 - m_Value * m_Value);
-        r12 = r21 = - m_Value / (L1 * L2 - m_Value * m_Value);
+        Yn[m_X][m_X] += sValue * L1;
+        Yn[m_X][m_Y] += sValue * m_Value;
+        Yn[m_Y][m_X] += sValue * m_Value;
+        Yn[m_Y][m_Y] += sValue * L2;
 
-        Yn[m_A][m_A] += r11 / sValue;
-        Yn[m_B][m_B] += r11 / sValue;
-        Yn[m_C][m_C] += r22 / sValue;
-        Yn[m_D][m_D] += r22 / sValue;
-        Yn[m_A][m_B] -= r11 / sValue;
-        Yn[m_B][m_A] -= r11 / sValue;
-        Yn[m_A][m_C] += r12 / sValue;
-        Yn[m_C][m_A] += r21 / sValue;
-        Yn[m_A][m_D] -= r12 / sValue;
-        Yn[m_D][m_A] -= r21 / sValue;
-        Yn[m_B][m_C] -= r12 / sValue;
-        Yn[m_C][m_B] -= r21 / sValue;
-        Yn[m_B][m_D] += r12 / sValue;
-        Yn[m_D][m_B] += r21 / sValue;
-        Yn[m_C][m_D] -= r22 / sValue;
-        Yn[m_D][m_C] -= r22 / sValue;
-        Yn[m_A][numVariables + 1] -= initialValueL1 / sValue;
-        Yn[m_B][numVariables + 1] += initialValueL1 / sValue;
-        Yn[m_C][numVariables + 1] -= initialValueL2 / sValue;
-        Yn[m_D][numVariables + 1] += initialValueL2 / sValue;
+        Yn[m_A][m_X] += 1;
+        Yn[m_B][m_X] -= 1;
+        Yn[m_C][m_Y] += 1;
+        Yn[m_D][m_Y] -= -1;
+
+        Yn[m_X][numVariables + 1] += L1 * initialValueL1 + m_Value * initialValueL2;
+        Yn[m_Y][numVariables + 1] += m_Value * initialValueL1 + L2 * initialValueL2;
     }
     else if (m_Type == 'I')
     {

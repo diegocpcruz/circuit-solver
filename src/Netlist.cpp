@@ -12,11 +12,16 @@ Netlist::Netlist()
 {
     m_NumVariables = m_NumElements = 0;
     m_Norm = 1;
-	m_Radius = 0;
+	m_Radius = 1;
+	m_Mode = "LIN";
 }
 
 Netlist::Netlist(string netlistPath)
 {
+    m_Norm = 1;
+	m_Radius = 1;
+	m_Mode = "LIN";
+
     ifstream netlistFile;
     string line;
 

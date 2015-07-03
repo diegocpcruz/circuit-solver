@@ -9,12 +9,12 @@ using namespace std;
 
 int main()
 {
-    Netlist netlist(".\\data\\simples.net");
+//    Netlist netlist(".\\data\\simples.net");
 //    Netlist netlist(".\\data\\tesla.net");
 //    Netlist netlist(".\\data\\leapfrog5.net");
 //    Netlist netlist(".\\data\\but3.net");
 //    Netlist netlist(".\\data\\el7g.net");
-//    Netlist netlist(".\\data\\el4.net");
+    Netlist netlist(".\\data\\el4.net");
 //    Netlist netlist(".\\data\\but3_ini.net");
 //    Netlist netlist(".\\data\\EL8.NET");
 //    cout << "Initial number of variables: " << netlist.getNumOfVariables() << endl;
