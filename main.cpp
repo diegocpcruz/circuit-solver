@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 #include "Polynomial.h"
 #include "Netlist.h"
 #include "Circuit.h"
@@ -64,5 +65,6 @@ int main()
 //    for (int i = 0; i < circuit.getSystemMaxOrder() + 1; i++)
 //        cout <<
 
+    system("pause");
     return 0;
 }
