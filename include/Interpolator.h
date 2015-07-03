@@ -10,6 +10,7 @@ using namespace std;
 class Interpolator
 {
 	public:
+		Interpolator(Circuit circuit);
 
 		vector< complex<double> > 	generateSValues(string mode, double radius, double order);
 		void 						getAVector(complex<double> A[MAX_VARIABLES + 1]);
