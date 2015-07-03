@@ -13,8 +13,12 @@ using namespace std;
 Interpolator::Interpolator(Circuit circuit)
 {
     m_Circuit = circuit;
+    int order = m_Circuit.getSystemMaxOrder();
 
-    m_SValues = generateSValues(m_Circuit.getMode(), m_Circuit.getRadius(), m_Circuit.getSystemMaxOrder());
+//    if (m_Circuit.haveStep()) generateSValues(m_Circuit.getMode(), m_Circuit.getRadius(), order + 1);
+//    else m_SValues = generateSValues(m_Circuit.getMode(), m_Circuit.getRadius(), order);
+
+    m_SValues = generateSValues(m_Circuit.getMode(), m_Circuit.getRadius(), order);
 
     for (int i = 0; i < (int)m_SValues.size(); i++)
         cout << "S" << i << " = " << m_SValues[i] << endl;
@@ -30,36 +34,33 @@ Interpolator::Interpolator(Circuit circuit)
      double step = 0;
      complex<double> sValue;
      vector< complex<double> > values;
-//	 	 Linear:
-     double real = radius;
-     double imag = 0;
-
-//	 	 Circular:
-     double modulus = radius;
-     double phase = 0;
 
      if (mode == "LIN")
      {
          step = 2 * radius/order;
-         sValue = complex<double>(-real , imag);
+         sValue = -radius;
          for (int i = 0; i < order + 1; i++)
          {
-             if (std::real(sValue) < EPSILON)
+             if (abs(sValue) < EPSILON)
              {
-                 sValue += complex<double>(step/2 , imag);
+                 sValue += step/2;
                  values.push_back(sValue);
-                 sValue += complex<double>(step/2 , imag);
+                 sValue += step/2;
 
                  continue;
              }
 
              values.push_back(sValue);
-             sValue += complex<double>(step , imag);
+             sValue += step;
          }
      }
 
      if (mode == "CIR")
      {
+         // Circular:
+         double modulus = radius;
+         double phase = 0;
+
          step = 2 * M_PI/(order + 1);
          sValue = polar(modulus, phase);
          for (int i = 0; i < order + 1; i++)
@@ -154,7 +155,12 @@ void Interpolator::getAVector(complex<double> A[MAX_VARIABLES + 1])
 
         if (m_Circuit.haveStep()) V[i][order + 2] = dValue * sValue;
         else V[i][order + 2] = dValue;
+
+//        V[i][order + 2] = dValue;
     }
+
+//    cout << "Before solve D: " << endl;
+//    m_Circuit.show(V, order + 1);
 
     m_Circuit.solve(V, order + 1);
     cout << "After solve D: " << endl;
@@ -168,7 +174,7 @@ void Interpolator::getAVector(complex<double> A[MAX_VARIABLES + 1])
     // Exibe na tela
     cout << "Denominador: " << endl;
     for (int i = order + 1; i >= 1; i--)
-        //if (order - i + 1 <= m_OrderD)
+//        if (order - i + 1 <= m_OrderD)
             printf("a%d = %.4lf\n", order - i + 1, std::real(A[i - 1]));
 
     cout << endl;
@@ -187,8 +193,11 @@ void Interpolator::getBMatrix(complex<double> B[MAX_VARIABLES + 1][MAX_VARIABLES
 
         for (int i = 1; i <= order + 1; i++)
         {
-            if (m_Circuit.haveStep()) V[i][order + 2] = m_EValues[i - 1][j - 1] * m_DValues[i - 1] * m_SValues[j - 1];
-            else V[i][order + 2] = m_EValues[i - 1][j - 1] * m_DValues[i - 1];
+            if (m_Circuit.haveStep())
+                V[i][order + 2] = m_EValues[i - 1][j - 1] * m_DValues[i - 1] * m_SValues[i - 1];
+            else
+                V[i][order + 2] = m_EValues[i - 1][j - 1] * m_DValues[i - 1];
+//            V[i][order + 2] = m_EValues[i - 1][j - 1] * m_DValues[i - 1];
         }
 
         m_Circuit.solve(V, order + 1);
@@ -229,7 +238,14 @@ void Interpolator::buildInterpolationMatrix(complex<double> V[MAX_VARIABLES + 1]
         complex<double> sValue = m_SValues[i - 1];
 
         for (int j = 1; j <= order + 1; j++)
+        {
+//            if (m_Circuit.haveStep())
+//                V[i][j] = pow(sValue, order - j + 1 + 1);
+//            else
+//                V[i][j] = pow(sValue, order - j + 1);
+
             V[i][j] = pow(sValue, order - j + 1);
+        }
     }
 }
 
@@ -313,7 +329,7 @@ void Interpolator::writeResultsToFile(complex<double> A[MAX_VARIABLES + 1],
     int maxOrder = m_Circuit.getSystemMaxOrder();
 
     // Arquivo para coeficientes do DENOMINADOR
-    string denFileName(name + ".d");
+    string denFileName(".\\data\\" + name + ".d");
     ofstream denominatorFile (denFileName.c_str());
 
     if (denominatorFile.is_open())
@@ -347,7 +363,7 @@ void Interpolator::writeResultsToFile(complex<double> A[MAX_VARIABLES + 1],
     {
         // Arquivo para coeficientes do DENOMINADOR
         char bufferName[255];
-        string numFileName(name + ".n" + itoa(j, bufferName, 10));
+        string numFileName(".\\data\\" + name + ".n" + itoa(j, bufferName, 10));
         ofstream numeratorFile (numFileName.c_str());
 
         if (numeratorFile.is_open())

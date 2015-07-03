@@ -11,12 +11,15 @@ int main()
 {
 //    Netlist netlist(".\\data\\simples.net");
 //    Netlist netlist(".\\data\\tesla.net");
-//    Netlist netlist(".\\data\\leapfrog5.net");
+    Netlist netlist(".\\data\\leapfrog5.net");
 //    Netlist netlist(".\\data\\but3.net");
+//    Netlist netlist(".\\data\\but3ic.net");
+//    Netlist netlist(".\\data\\but3id.net");
 //    Netlist netlist(".\\data\\el7g.net");
-    Netlist netlist(".\\data\\el4.net");
+//    Netlist netlist(".\\data\\el4.net");
 //    Netlist netlist(".\\data\\but3_ini.net");
 //    Netlist netlist(".\\data\\EL8.NET");
+//    Netlist netlist(".\\data\\el51Hz.net");
 //    cout << "Initial number of variables: " << netlist.getNumOfVariables() << endl;
 //    netlist.showVariables();
 //    string netlistPath;

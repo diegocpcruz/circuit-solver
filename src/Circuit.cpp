@@ -63,8 +63,8 @@ void Circuit::applyStamps(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 
     for (int i = 0; i < m_NumElements; i++)
     {
         m_Netlist.m_Elements[i].applyStamp(Yn, m_NumVariables, m_Netlist.m_Elements, sValue, m_Netlist.getNorm());
-        cout << "After stamp of (" << m_Netlist.m_Elements[i].getName() << ") | s = " << sValue << endl;
-        show(Yn, m_NumVariables);
+//        cout << "After stamp of (" << m_Netlist.m_Elements[i].getName() << ") | s = " << sValue << endl;
+//        show(Yn, m_NumVariables);
     }
 }
 
@@ -115,7 +115,7 @@ void Circuit::solve(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], in
 
 complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
 {
-    int i, j, l, a, counter;
+    int i, j, l, a, counter = 0;
     complex<double> t, p = 0;
     complex<double> det = 1;
 
@@ -131,23 +131,17 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
             {
                 a = l;
                 t = Yn[l][i];
-                counter++;
-
-//                cout << "counter: " << counter << endl;
-//                cout << "l: " << l << endl;
-//                cout << "i: " << i<< endl;
-//                cout << "Yn: " << Yn[l][i] << endl << endl;
             }
         }
         if( i != a)
         {
-//            cout << "[2]: "; cout << endl; show(Yn, 2); cout << endl;
             for( l = 1; l <= numVariables + 1; l++ )
             {
                 p = Yn[i][l];
                 Yn[i][l] = Yn[a][l];
                 Yn[a][l] = p;
             }
+            counter++;
         }
         if( abs( t ) < EPSILON )
         {
@@ -168,7 +162,6 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
                     Yn[l][j] -= Yn[l][i] * Yn[i][j]/t;
             }
         }
-//        cout << "ITERACAO [" << i << "] :" << endl; show(Yn, 2);  cout << endl;
     }
 
     for (int i = 1; i <= numVariables; i++)
@@ -177,11 +170,72 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
 //    cout << "det antes: " << det << endl;
     det *= pow(-1, counter);
 
-//     cout << "det depois: " << det << endl;
+     cout << "det depois: " << det << endl;
 //    cout << "final counter: " << counter << endl;
 
     return det;
 }
+
+//complex<double> Circuit::determinant(complex<double> mat[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int numVariables)
+//
+//{
+//    int n = numVariables;
+//
+//
+//    for(int col = 1; col <= n + 1; ++col) {
+//        bool found = false;
+//        for(int row = col; row <= n; ++row)
+//        {
+//            if(abs(mat[row][col]) > EPSILON)
+//            {
+//                for (int k = 1; k <= n + 1; k++)
+//                {
+//                    complex<double> temp;
+//
+//                    temp = mat[row][k];
+//                    mat[row][k] = mat[col][k];
+//                    mat[col][k] = temp;
+//                }
+//                found = true;
+//                break;
+//            }
+//        }
+//        if(!found) {
+//            return 0;
+//        }
+//        for(int row = col + 1; row <= n; ++row) {
+//            while(true) {
+//                complex<double> del = mat[row][col] / mat[col][col];
+//                for (int j = col; j <= n + 1; ++j) {
+//                    mat[row][j] -= del * mat[col][j];
+//                }
+//                if (abs(mat[row][col]) == 0)
+//                    break;
+//                else
+//                {
+//                    for (int k = 1; k <= n + 1; k++)
+//                    {
+//                        complex<double> temp;
+//
+//                        temp = mat[row][k];
+//                        mat[row][k] = mat[col][k];
+//                        mat[col][k] = temp;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    complex<double> res(1,0);
+//
+//    for(int i = 1; i <= n; ++i) {
+//        res *= mat[i][i];
+//    }
+//
+//    cout << "determinant: " << res << endl;
+//    return res;
+//}
+
 
 void Circuit::init(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2])
 {
@@ -230,7 +284,16 @@ void Circuit::show(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], int
 
 int Circuit::getSystemMaxOrder()
 {
-    return m_Netlist.getSystemMaxOrder();
+    int order;
+
+    if (haveStep())
+        order = m_Netlist.getSystemMaxOrder() + 1;
+    else
+        order = m_Netlist.getSystemMaxOrder();
+
+    return order;
+
+//    return m_Netlist.getSystemMaxOrder();
 }
 
 //int Circuit::getNumNodes()

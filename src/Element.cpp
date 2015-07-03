@@ -274,6 +274,7 @@ void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2
     {
         double L1, L2;
         double initialValueL1, initialValueL2;
+        double M;
 
         for (int i = 0; i < (int)elementsList.size(); i++)
         {
@@ -299,28 +300,40 @@ void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2
             }
         }
 
-        Yn[m_X][m_A] -= 1;
-        Yn[m_X][m_B] += 1;
-        Yn[m_Y][m_C] -= 1;
-        Yn[m_Y][m_D] += 1;
+        M = m_Value * sqrt(L1 * L2);
 
-        Yn[m_X][m_X] += sValue * L1;
-        Yn[m_X][m_Y] += sValue * m_Value;
-        Yn[m_Y][m_X] += sValue * m_Value;
-        Yn[m_Y][m_Y] += sValue * L2;
+//        Yn[m_X][m_A] -= 1;
+//        Yn[m_X][m_B] += 1;
+//        Yn[m_Y][m_C] -= 1;
+//        Yn[m_Y][m_D] += 1;
+//
+//        Yn[m_X][m_X] += sValue * L1;
+        Yn[m_X][m_Y] += sValue * M;
+        Yn[m_Y][m_X] += sValue * M;
+//        Yn[m_Y][m_Y] += sValue * L2;
+//
+//        Yn[m_A][m_X] += 1;
+//        Yn[m_B][m_X] -= 1;
+//        Yn[m_C][m_Y] += 1;
+//        Yn[m_D][m_Y] -= -1;
 
-        Yn[m_A][m_X] += 1;
-        Yn[m_B][m_X] -= 1;
-        Yn[m_C][m_Y] += 1;
-        Yn[m_D][m_Y] -= -1;
+//        Yn[m_X][numVariables + 1] += L1 * initialValueL1 + m_Value * initialValueL2;
+//        Yn[m_Y][numVariables + 1] += m_Value * initialValueL1 + L2 * initialValueL2;
 
-        Yn[m_X][numVariables + 1] += L1 * initialValueL1 + m_Value * initialValueL2;
-        Yn[m_Y][numVariables + 1] += m_Value * initialValueL1 + L2 * initialValueL2;
+        Yn[m_X][numVariables + 1] += M * initialValueL2;
+        Yn[m_Y][numVariables + 1] += M * initialValueL1;
     }
     else if (m_Type == 'I')
     {
-        Yn[m_A][numVariables + 1] -= m_Value;
-        Yn[m_B][numVariables + 1] += m_Value;
+         if (m_Mode == "DEGRAU")
+            Yn[m_A][numVariables + 1] -= m_Value / sValue;
+         else
+            Yn[m_A][numVariables + 1] -= m_Value;
+
+        if (m_Mode == "DEGRAU")
+            Yn[m_B][numVariables + 1] += m_Value / sValue;
+        else
+            Yn[m_B][numVariables + 1] += m_Value;
     }
     else if (m_Type == 'V')
     {
@@ -328,7 +341,11 @@ void Element::applyStamp(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2
         Yn[m_B][m_X] -= 1;
         Yn[m_X][m_A] -= 1;
         Yn[m_X][m_B] += 1;
-        Yn[m_X][numVariables + 1] -= m_Value;
+
+        if (m_Mode == "DEGRAU")
+            Yn[m_X][numVariables + 1] -= m_Value / sValue;
+        else
+            Yn[m_X][numVariables + 1] -= m_Value;
     }
     else if (m_Type == 'E')
     {
