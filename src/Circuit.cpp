@@ -2,6 +2,7 @@
 #include <iostream>
 #include <complex>
 #include <cstdio>
+#include <cstdlib>
 #include "Netlist.h"
 #include "Circuit.h"
 #include "Element.h"
@@ -97,10 +98,11 @@ void Circuit::solve(complex<double> Yn[MAX_VARIABLES + 1][MAX_VARIABLES + 2], in
         }
         if( abs( t ) < EPSILON )
         {
-            cout << "Sistema singular" << endl;
-            return;
+            cout << " >> Sistema singular << " << endl;
+
+            exit(EXIT_FAILURE);
         }
-        for( j = numVariables + 1; j > 0; j-- ) /* Basta j>i em vez de j>0 */
+        for( j = numVariables + 1; j > 0; j-- )
         {
             Yn[i][j] /= t;
             p = Yn[i][j];
@@ -170,7 +172,7 @@ complex<double> Circuit::determinant(complex<double> Yn[MAX_VARIABLES + 1][MAX_V
 //    cout << "det antes: " << det << endl;
     det *= pow(-1, counter);
 
-     cout << "det depois: " << det << endl;
+//     cout << "det depois: " << det << endl;
 //    cout << "final counter: " << counter << endl;
 
     return det;

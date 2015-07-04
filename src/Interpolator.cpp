@@ -163,8 +163,8 @@ void Interpolator::getAVector(complex<double> A[MAX_VARIABLES + 1])
 //    m_Circuit.show(V, order + 1);
 
     m_Circuit.solve(V, order + 1);
-    cout << "After solve D: " << endl;
-    m_Circuit.show(V, order + 1);
+//    cout << "After solve D: " << endl;
+//    m_Circuit.show(V, order + 1);
 
     for (int i = order + 1; i >= 1; i--)
         A[i - 1] = V[i][order + 2];
@@ -174,7 +174,7 @@ void Interpolator::getAVector(complex<double> A[MAX_VARIABLES + 1])
     // Exibe na tela
     cout << "Denominador: " << endl;
     for (int i = order + 1; i >= 1; i--)
-//        if (order - i + 1 <= m_OrderD)
+        if (order - i + 1 <= m_OrderD)
             printf("a%d = %.4lf\n", order - i + 1, std::real(A[i - 1]));
 
     cout << endl;
@@ -258,6 +258,7 @@ void Interpolator::normalizeA(complex<double> A[MAX_VARIABLES + 1], int maxOrder
     {
         if (abs(A[i]) < EPSILON)
             A[i] = 0;
+//            A[i] = complex<double> (0,0);
     }
 
     // Encontra coeficiente de maior grau
@@ -329,7 +330,7 @@ void Interpolator::writeResultsToFile(complex<double> A[MAX_VARIABLES + 1],
     int maxOrder = m_Circuit.getSystemMaxOrder();
 
     // Arquivo para coeficientes do DENOMINADOR
-    string denFileName(".\\data\\" + name + ".d");
+    string denFileName(".\\data\\output\\" + name + ".d");
     ofstream denominatorFile (denFileName.c_str());
 
     if (denominatorFile.is_open())
@@ -363,14 +364,14 @@ void Interpolator::writeResultsToFile(complex<double> A[MAX_VARIABLES + 1],
     {
         // Arquivo para coeficientes do DENOMINADOR
         char bufferName[255];
-        string numFileName(".\\data\\" + name + ".n" + itoa(j, bufferName, 10));
+        string numFileName(".\\data\\output\\" + name + ".n" + itoa(j, bufferName, 10));
         ofstream numeratorFile (numFileName.c_str());
 
         if (numeratorFile.is_open())
         {
             char buffer[255];
 
-            numeratorFile << m_OrderD << endl;
+            numeratorFile << m_OrdersB[j - 1] << endl;
 
             // Exibe na tela
             for (int i = maxOrder + 1; i >= 1; i--)

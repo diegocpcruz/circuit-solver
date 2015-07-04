@@ -10,6 +10,8 @@ using namespace std;
 
 int main()
 {
+//    Netlist netlist(".\\data\\original3.net");
+//  Netlist netlist(".\\data\\original.net");
 //    Netlist netlist(".\\data\\simples.net");
 //    Netlist netlist(".\\data\\tesla.net");
 //    Netlist netlist(".\\data\\leapfrog5.net");
@@ -28,7 +30,7 @@ int main()
     cout << "Caminho para o netlist: ";
     cin >> netlistPath;
     cout << endl;
-//
+
     Netlist netlist(netlistPath);
     // Teste p/ inicialização do circuito
 

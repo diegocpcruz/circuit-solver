@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <sstream>
+#include <cstdlib>
 #include "Element.h"
 #include "Netlist.h"
 
@@ -32,7 +33,7 @@ Netlist::Netlist(string netlistPath)
     if (!netlistFile.is_open())
     {
         cout << "Error opening file." << endl;
-        return;
+        exit(EXIT_FAILURE);
     }
 
     while(getline(netlistFile, line))
@@ -77,7 +78,7 @@ Netlist::Netlist(string netlistPath)
 
     countNodes();
     addAllCurrentVariables();
-    showVariables();
+//    showVariables();
 
     m_NumElements = m_Elements.size();
 }
